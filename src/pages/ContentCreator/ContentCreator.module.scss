@@ -1,0 +1,183 @@
+.contantCreatorContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contantCreatorHeader{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.contantCreatorTitle{
+    color: #444444;
+    font-size: 22px;
+}
+
+.contantCreatorSpan{
+    color:#888888;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.contentContainer{
+    display: flex;
+    gap:15px;
+    width:80%;
+}
+
+@media(max-width:900px){
+    .contentContainer{
+        width:90%;
+        flex-wrap: wrap;
+    }
+}
+
+.contentItem{
+    background-color: #F9F9F9;
+    border-radius: 15px;
+    height: fit-content;
+    width:100%;
+    padding: 30px;
+    transition: 0.5s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contentItem:hover{
+    background-color: #f4f4f4;
+}
+
+.contentItemTitle{
+    color:#444444;
+    font-size: 12px;
+    border-bottom: 1px solid #444444;
+    margin-bottom: 20px;
+}
+
+.contentItemSpan{
+    color:#444444;
+    font-size: 12px;
+}
+
+.contentItemUserName{
+    color:#888888;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:8px;
+    width:100%;
+    margin-bottom: 10px;
+}
+
+.contentItemInput{
+    width:100%;
+    padding: 10px;
+    color:#888888;
+    border:0.5px solid #DDDDDD;
+    font-size: 12px;
+    border-radius: 20px;
+    background-color: #F9F9F9;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+}
+
+.contentItemInput:focus{
+    border:1px solid #444444
+}
+
+.contentItemButtonSubmit{
+    background-color: #DDDDDD;
+    padding: 10px;
+    width:fit-content;
+    font-size: 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    width:86px;
+}
+
+.forgotPassword{
+    color:#888888;
+    font-size: 12px;
+    border-bottom: 1px solid #888888;
+}
+
+.contentItemTwo{
+    display: flex;
+    flex-direction: column;
+    gap:15px;
+    width: 100%;
+}
+
+.priceContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:5px;
+    align-items: center;
+}
+
+.priceButton{
+    border:1px solid #DDDDDD;
+    padding: 10px;
+    color:#444444;
+    font-size: 12px;
+    width:91px;
+    border-radius: 31.5px;
+    font-weight: 500;
+}
+
+.priceButtonSelect{
+    position: relative;
+
+}
+
+.chevronDown{
+    position: absolute;
+    top:17px;
+    right: 15px;
+}
+
+.totalSalesPrice{
+    color: #444444;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.contentItemDeleteAccountText{
+    color:#444444;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.AUDList{
+    position: absolute;
+    background-color: white;
+    width:91px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    top:50px;
+    padding: 5px;
+}
+
+.AUDListItem{
+    padding: 5px;
+    font-size: 12px;
+    color:#444444;
+    cursor: pointer;
+    width:100%;
+    border-radius: 6px;
+}
+
+.AUDListItem:hover{
+    background-color: #F9F9F9;
+}
