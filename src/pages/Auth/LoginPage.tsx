@@ -4,8 +4,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Controller, useForm} from "react-hook-form";
 import {Link, useNavigate} from "react-router-dom";
 import {z, ZodType} from "zod";
-
-import {ILoginReq, login} from "@/apiClient/apiClient";
+import {ILoginReq} from "@/apiClient/types/auth.reqs.types";
+import {login} from "@/apiClient/services/auth/auth.service";
 
 type Props = {};
 

@@ -8,12 +8,37 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "@/pages/Auth/LoginPage";
 import SignupPage from "@/pages/Auth/SignupPage";
 import AuthLayout from "@/Layouts/AuthLayout";
+import CreateProjectPage from "@/pages/CreateProjectPage/CreateProjectPage";
+import MasterProjectPage from "@/pages/MasterProjectPage/MasterProjectPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: [{path: "", element: <HomePage />}],
+    children: [
+      {path: "", element: <HomePage />},
+      {
+        path: "/create-project",
+        element: (
+          <ProtectedRoute
+            role="creator"
+            redirectPath="/"
+            Component={CreateProjectPage}
+          />
+        ),
+      },
+      {
+        path: "/master-project/:projectId",
+        element: (
+          <ProtectedRoute
+            role="creator"
+            redirectPath="/"
+            Component={MasterProjectPage}
+          />
+        ),
+        // children: [{path: "/collection/:collectionId", element: <><}],
+      },
+    ],
   },
   {
     path: "/auth",

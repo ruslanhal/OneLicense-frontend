@@ -4,11 +4,10 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Controller, useForm} from "react-hook-form";
 
 import {SupplierSchema, type TSupplierSchema} from "@/pages/Auth/types/types";
-import {ISignUpReq, signUp} from "@/apiClient/apiClient";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-
-interface IProps {}
+import {ISignUpReq} from "@/apiClient/types/auth.reqs.types";
+import {signUp} from "@/apiClient/services/auth/auth.service";
 
 interface ReqError {
   isError: boolean;

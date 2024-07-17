@@ -1,11 +1,23 @@
 import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 import "./App.scss";
 import MainLayout from "./Layouts/MainLayout";
 import {authHook} from "./apiClient/hooks/authHooks";
 
 function App() {
-  const {user} = authHook();
+  const navigate = useNavigate();
+  const {user, error, isLoading} = authHook();
+  // console.log("-==-=-=-=-=-=-app user", user);
+  // console.log("-==-=-=-=-=-=-app error", error);
+  if (!user && !isLoading) {
+    navigate("/auth");
+  }
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/auth");
+  //   }
+  // }, [user, navigate]);
 
   return (
     <>

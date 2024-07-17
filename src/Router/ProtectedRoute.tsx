@@ -1,23 +1,23 @@
-import {Navigate} from "react-router-dom";
+import {IUser} from "@/common/types/user.types";
+import {useQueryClient} from "@tanstack/react-query";
+import {Navigate, Outlet} from "react-router-dom";
 
 type Props = {
-  isAllowed: boolean;
-  elementPath: string;
   redirectPath: string | "auth/login";
   role: "creator" | "supplier";
+  Component: React.FC;
 };
 
-const ProtectedRoute = ({
-  isAllowed,
-  elementPath,
-  redirectPath,
-  role,
-}: Props) => {
-  if (!isAllowed) {
+const ProtectedRoute = ({redirectPath, role, Component}: Props) => {
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<IUser>(["profile"]);
+
+  if (user && user?.role !== role && redirectPath) {
     return <Navigate to={redirectPath} replace />;
   }
 
-  return <Navigate to={`${elementPath}/${role}`} replace />;
+  // return <Navigate to={`${elementPath}/${role}`} replace />;
+  return <Component />;
 };
 
 export default ProtectedRoute;

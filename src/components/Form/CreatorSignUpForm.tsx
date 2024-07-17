@@ -6,7 +6,8 @@ import {Controller, useForm} from "react-hook-form";
 
 import {CreatorSchema, type TCreatorSchema} from "@/pages/Auth/types/types";
 import {useNavigate} from "react-router-dom";
-import {ISignUpReq, signUp} from "@/apiClient/apiClient";
+import {ISignUpReq} from "@/apiClient/types/auth.reqs.types";
+import {signUp} from "@/apiClient/services/auth/auth.service";
 
 type Props = {};
 
