@@ -3,7 +3,7 @@ import React from "react";
 
 import defaultImg from "@/assets/Kaye_0147.png";
 
-import addIcon from "@/assets/icon_add_new.svg";
+import IconAddNew from "@/assets/IconAddNew";
 import {useNavigate} from "react-router-dom";
 
 interface Props {}
@@ -26,7 +26,7 @@ const HomePage = (props: Props) => {
           }}
           className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full"
         >
-          <img src={addIcon} />
+          <IconAddNew />
         </button>
       </div>
       <div className="flex flex-wrap justify-center">

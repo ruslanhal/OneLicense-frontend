@@ -1,6 +1,6 @@
 import Button from "@/components/Button/Button";
 import Logo from "../../assets/logo.svg";
-import NotIcon from "@/assets/notifications.Icon.svg";
+import Notification from "@/assets/Notification/Notification";
 
 import {authHook} from "@/apiClient/hooks/authHooks";
 import {useState} from "react";
@@ -8,6 +8,8 @@ import UserDropdown from "@/components/UserDropdown/UserDropdown";
 
 import {useQueryClient} from "@tanstack/react-query";
 import {IUser} from "@/common/types/user.types";
+import styles from './Header.module.scss'
+import { Link } from "react-router-dom";
 
 const Header = () => {
   // const {user} = authHook();
@@ -25,16 +27,14 @@ const Header = () => {
         </div>
 
         <div className="flex justify-center items-center gap-2">
-          <Button styleType="button_header" text="Projects" />
-          <Button styleType="button_header" text="Licenses" />
+          <Link to="/"><Button styleType="button_header" text="Projects" /></Link>
+          <Link to="/licenses"><Button styleType="button_header" text="Licenses" /></Link>
           <input
             placeholder="Search project"
-            className=" w-72 h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full text-center  focus:outline-none"
+            className={styles.input}
           ></input>
 
-          <div className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full">
-            <img src={NotIcon} />
-          </div>
+          <Notification />
 
           {/* <div>
             <span className="underline cursor-pointer">

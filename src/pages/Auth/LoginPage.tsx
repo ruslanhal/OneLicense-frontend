@@ -6,6 +6,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {z, ZodType} from "zod";
 import {ILoginReq} from "@/apiClient/types/auth.reqs.types";
 import {login} from "@/apiClient/services/auth/auth.service";
+import styles from './Auth.module.scss';
 
 type Props = {};
 
@@ -75,7 +76,7 @@ const Login = (props: Props) => {
               <input
                 {...field}
                 placeholder="Email"
-                className="w-[300px] h-[40px] rounded-full text-center focus:outline-none"
+                className={styles.input}
               />
             </>
           )}
@@ -94,7 +95,7 @@ const Login = (props: Props) => {
                 {...field}
                 placeholder="Password"
                 type="password"
-                className="w-[300px] h-[40px] rounded-full text-center focus:outline-none"
+                className={styles.input}
               />
             </>
           )}

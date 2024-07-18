@@ -1,17 +1,27 @@
 import React,{useState} from "react";
 import styles from "./ContentCreator.module.scss";
-import DeleteAccount from "../../assets/DeleteAccount.svg";
-import LogOut from "../../assets/LogOut.svg";
 import ChevronDown from "../../assets/ChevronDown.svg";
+import LogOut from "@/assets/LogOut";
+import DeleteAccount from "@/assets/DeleteAccount";
+import {logout} from "@/apiClient/services/auth/auth.service";
+import {useNavigate} from "react-router-dom";
 
 export default function ContentCreator() {
   const [isAUDOpened, setIsAUDOpened]=useState(false);
+  const [price, setPrice]=useState("$15");
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/auth");
+  };
   return (
     <div className={styles.contantCreatorContainer}>
       <div className={styles.contantCreatorHeader}>
         <h1 className={styles.contantCreatorTitle}>Timothy Kaye</h1>
         <span className={styles.contantCreatorSpan}>Content Creator</span>
-        <img src={LogOut} />
+        <LogOut onClick={()=>handleLogout()}/>
       </div>
 
       <div className={styles.contentContainer}>
@@ -50,7 +60,8 @@ export default function ContentCreator() {
           <div className={styles.contentItem}>
             <div className={styles.contentItemTitle}>Price Per Image</div>
             <div className={styles.priceContainer}>
-              <button className={styles.priceButton}>$15</button>
+               
+              <input value={price} onChange={(e)=>setPrice(e.target.value)} className={styles.priceButton} />
 
               <div className={styles.priceButtonSelect}>
                 <button className={styles.priceButton} onClick={()=>setIsAUDOpened(!isAUDOpened)}>AUD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
@@ -76,7 +87,7 @@ export default function ContentCreator() {
             projects, licenses and information from Editions. This cannot be undone
             </span>
 
-            <img src={DeleteAccount} />
+            <DeleteAccount />
           </div>
       </div>
     </div>

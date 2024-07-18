@@ -16,3 +16,18 @@ h2 {
     padding: 10px 20px; // Додатковий відступ для кнопок
   }
 }
+
+.input{
+  padding: 10px;
+  border-radius: 31.5px;
+  font-size: 12px;
+  background-color: #FAFAFA;
+  color: #888888;
+  text-align: center;
+  width:300px;
+  outline: none;
+
+  &:hover::placeholder{
+    color: #444444;
+  }
+}

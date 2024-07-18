@@ -47,10 +47,6 @@
     align-items: center;
 }
 
-.contentItem:hover{
-    background-color: #f4f4f4;
-}
-
 .contentItemTitle{
     color:#444444;
     font-size: 12px;
@@ -89,10 +85,10 @@
     cursor: pointer;
     text-align: center;
     outline: none;
-}
 
-.contentItemInput:focus{
-    border:1px solid #444444
+    &:hover::placeholder{
+        color:#000000;
+    }
 }
 
 .contentItemButtonSubmit{
@@ -109,6 +105,7 @@
     color:#888888;
     font-size: 12px;
     border-bottom: 1px solid #888888;
+    cursor: pointer;
 }
 
 .contentItemTwo{
@@ -130,9 +127,12 @@
     padding: 10px;
     color:#444444;
     font-size: 12px;
+    background-color: #DDDDDD;
     width:91px;
     border-radius: 31.5px;
     font-weight: 500;
+    text-align: center;
+    outline: none;
 }
 
 .priceButtonSelect{

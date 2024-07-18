@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import iconAddNew from "@/assets/icon_add_new.svg";
 import iconSave from "@/assets/icon_save.svg";
-import iconLabel from "@/assets/icon_label.svg";
 import Project from "@/components/Project/Project";
 import { useGetProject } from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
+import IconAddNew from "@/assets/IconAddNew";
+import Tabs from "@/assets/Tabs";
+import Save from "@/assets/Save";
+import CardPrice from "@/components/CardPrice/CardPrice";
+import { axiosClient } from "@/apiClient/apiClient";
 
 type Props = {};
 
@@ -29,7 +32,7 @@ const MasterProjectPage = (props: Props) => {
   const { projectId } = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
-  const [files, setFiles] = useState<FileInterface[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [tagsList, setTagsList] = useState<Tag[]>([
     {
       id: "1",
@@ -48,10 +51,15 @@ const MasterProjectPage = (props: Props) => {
       name: "Brodware",
     },
   ]);
-
-  const handleDragAndDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fileList = e.target.files;
+    const newFiles = Array.from(fileList);
+
+    const filesLength = files.length + newFiles.length;
+    if (filesLength >= 10) {
+      return;
+    }
 
     if (fileList) {
       const newFiles: FileInterface[] = Array.from(fileList).map(
@@ -62,11 +70,30 @@ const MasterProjectPage = (props: Props) => {
         })
       );
       setFiles([...files, ...newFiles]);
+
+      const formData = new FormData();
+      formData.append('files', files);
+
+      try{
+        const response=await axiosClient.post(`/project/upload/${projectId}`,formData,{
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }});
+        
+          console.log(response.data)
+      }
+      catch(e){
+        console.log(e)
+      }
+
+      console.log(files[0]);
     }
+
+    console.log(fileList);
   };
 
   const removeItem = (id: string) => {
-    const updatedTagsList = tagsList.filter(tag => tag.id !== id);
+    const updatedTagsList = tagsList.filter((tag) => tag.id !== id);
     setTagsList(updatedTagsList);
   };
 
@@ -76,9 +103,9 @@ const MasterProjectPage = (props: Props) => {
     setTagsList([...tagsList, newTag]);
   };
 
-  const closeForm=(value:boolean)=>{
+  const closeForm = (value: boolean) => {
     setIsTagsOpen(value);
-  }
+  };
 
   if (!projectId) {
     return <div>Error: Project is not available</div>;
@@ -99,27 +126,23 @@ const MasterProjectPage = (props: Props) => {
       </div>
       <div className="flex justify-center items-center gap-2 mt-4 mb-5">
         <button
-          onClick={() =>{ setIsDragAndDropOpened(true);
-            setIsTagsOpen(false)
+          onClick={() => {
+            setIsDragAndDropOpened(true);
+            setIsTagsOpen(false);
           }}
-          className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full"
         >
-          <img src={iconAddNew} />
+          <IconAddNew />
         </button>
         <button
           onClick={() => {
             setIsTagsOpen(true);
             setIsDragAndDropOpened(false);
           }}
-          className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full"
         >
-          <img src={iconLabel} />
+          <Tabs />
         </button>
-        <button
-          onClick={() => {}}
-          className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full"
-        >
-          <img src={iconSave} />
+        <button onClick={() => {}}>
+          <Save />
         </button>
       </div>
       {/*  <div className="flex flex-wrap justify-center">
@@ -132,27 +155,48 @@ const MasterProjectPage = (props: Props) => {
         )}
       </div> */}
 
-      {isDragAndDropOpened ? (
+      {isDragAndDropOpened && files.length === 0 ? (
         <div className={styles.dragAndDropFormContainer}>
           <input
             onChange={handleDragAndDrop}
             type="file"
             multiple
             className={styles.dragAndDropInput}
+            accept=".jpg, .jpeg, .png, .gif"
           />
+
+          <div className={styles.dragAndDropFormBackground}></div>
 
           <div className={styles.dragAndDropTextContainer}>
             <div className={styles.dragAndDropTextTitle}>
-              Drop files here to send them
+              Drop High Resolution files here
             </div>
-            <span className={styles.dragAndDropTextSpan}>in a quick way</span>
+            <span className={styles.dragAndDropTextSpan}>
+              Upload{" "}
+              <span style={{ borderBottom: "1px solid #343434" }}>
+                High Resolution JPG files
+              </span>{" "}
+              by dropping them into this window
+            </span>
           </div>
         </div>
       ) : null}
 
       {isTagsOpen ? (
-        <TagsForm closeForm={closeForm} addItem={addItem} tagsList={tagsList} removeItem={removeItem} />
+        <TagsForm
+          closeForm={closeForm}
+          addItem={addItem}
+          tagsList={tagsList}
+          removeItem={removeItem}
+        />
       ) : null}
+
+      <CardPrice
+        title="vfrrvvrf"
+        price="$15"
+        author="wdeewddwewded"
+        imageUrl="dcdwe"
+      />
     </div>
   );
 };

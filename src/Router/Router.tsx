@@ -11,6 +11,7 @@ import AuthLayout from "@/Layouts/AuthLayout";
 import CreateProjectPage from "@/pages/CreateProjectPage/CreateProjectPage";
 import MasterProjectPage from "@/pages/MasterProjectPage/MasterProjectPage";
 import ContentCreator from '@/pages/ContentCreator/ContentCreator';
+import Licenses from "@/pages/Licenses/Licenses";
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +47,17 @@ export const router = createBrowserRouter([
             role="creator"
             redirectPath="/"
             Component={ContentCreator}
+          />
+        ),
+        // children: [{path: "/collection/:collectionId", element: <><}],
+      },
+      {
+        path: "/licenses",
+        element: (
+          <ProtectedRoute
+            role="creator"
+            redirectPath="/licenses"
+            Component={Licenses}
           />
         ),
         // children: [{path: "/collection/:collectionId", element: <><}],

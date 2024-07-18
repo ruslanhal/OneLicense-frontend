@@ -34,3 +34,14 @@
     }
   }
 }
+
+.username{
+  color: #444444;
+  font-size: 12px;
+  border-bottom: 1px solid #444444;
+
+  &:hover{
+    color:#888888;
+    border-bottom: 1px solid #888888;
+  }
+}

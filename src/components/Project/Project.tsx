@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./Project.module.scss";
 
 type Props = {
   title: string;
@@ -6,12 +7,14 @@ type Props = {
   imageUrl: string;
 };
 
-const Project = ({title, author, imageUrl}: Props) => {
+const Project = ({ title, author, imageUrl }: Props) => {
   return (
-    <div className="flex flex-col justify-center items-center  border-[1px] border-[#EAEAEA] min-w-80 min-h-[450px] max-w-md   max-h-[550px] ">
+    <div className={styles.container}>
       <img src={imageUrl} />
-      <p className="mb-2">{title}</p>
-      <p>{author}</p>
+      <div className={styles.projectInfo}>
+        <p className={styles.title}>{title}</p>
+        <p className={styles.span}>{author}</p>
+      </div>
     </div>
   );
 };
