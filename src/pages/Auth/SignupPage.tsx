@@ -2,6 +2,7 @@ import {useState} from "react";
 
 import CreatorSignUpForm from "@/components/Form/CreatorSignUpForm";
 import SupplierSignUpForm from "@/components/Form/SupplierSignUpForm";
+import styles from './Auth.module.scss'
 
 const Signup = () => {
   const [roleState, setRolestate] = useState<"creator" | "supplier">("creator");
@@ -19,7 +20,7 @@ const Signup = () => {
       <select
         defaultValue=""
         onChange={handleRoleChange}
-        className="w-[300px] h-[40px] rounded-full text-center text-[#888888] focus:outline-none appearance-none"
+        className={styles.input}
       >
         <option value="" disabled hidden>
           Account Type

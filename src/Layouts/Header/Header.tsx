@@ -17,7 +17,7 @@ const Header = () => {
   // console.log("-=-=-=-=-=data in header", data);
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<IUser>(["profile"]);
-  console.log("-=-=-=-=-=user in header", user);
+ // console.log("-=-=-=-=-=user in header", user);
 
   return (
     <header>

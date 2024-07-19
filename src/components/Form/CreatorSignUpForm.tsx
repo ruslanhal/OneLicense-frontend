@@ -8,6 +8,7 @@ import {CreatorSchema, type TCreatorSchema} from "@/pages/Auth/types/types";
 import {useNavigate} from "react-router-dom";
 import {ISignUpReq} from "@/apiClient/types/auth.reqs.types";
 import {signUp} from "@/apiClient/services/auth/auth.service";
+import styles from './styles/InputStyles.module.scss';
 
 type Props = {};
 
@@ -74,7 +75,7 @@ const CreatorSignUpForm = (props: Props) => {
               <input
                 {...field}
                 placeholder="First name"
-                className="w-[300px] h-[40px] rounded-full text-center  focus:outline-none"
+                className={styles.input}
               />
             </>
           )}
@@ -91,7 +92,7 @@ const CreatorSignUpForm = (props: Props) => {
               <input
                 {...field}
                 placeholder="Surname"
-                className="w-[300px] h-[40px] rounded-full text-center focus:outline-none"
+                className={styles.input}
               />
             </>
           )}
@@ -109,7 +110,7 @@ const CreatorSignUpForm = (props: Props) => {
               <input
                 {...field}
                 placeholder="Email"
-                className="w-[300px] h-[40px] rounded-full text-center focus:outline-none"
+                className={styles.input}
               />
             </>
           )}
@@ -128,7 +129,7 @@ const CreatorSignUpForm = (props: Props) => {
                 {...field}
                 placeholder="Password"
                 type="password"
-                className="w-[300px] h-[40px] rounded-full text-center focus:outline-none"
+                className={styles.input}
               />
             </>
           )}

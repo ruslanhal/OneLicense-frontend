@@ -4,7 +4,7 @@ import {ICreateProject} from "./types/project.reqs.types";
 export const createProject = async (data: ICreateProject) => {
   try {
     const response = await axiosClient.post("/project", data);
-    console.log("-=-=-=-=-rsxios createProject", response.data);
+  //  console.log("-=-=-=-=-rsxios createProject", response.data);
     return response.data;
   } catch (error) {
     console.log("-=-=-=-=errro", error);
@@ -18,7 +18,7 @@ export const createProject = async (data: ICreateProject) => {
 export const getProject = async (id: string) => {
   try {
     const response = await axiosClient.get(`/project/${id}`);
-    console.log("-=-=-=-=-responsedata getProject", response.data);
+   // console.log("-=-=-=-=-responsedata getProject", response.data);
     return response.data;
   } catch (error) {
     console.log("-=-=-=-=errro", error);
