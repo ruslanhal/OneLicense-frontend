@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useParams} from "react-router-dom";
 
 import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
-import { useGetProject } from "@/apiClient/hooks/projectHooks";
+import {useGetProject} from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
 import CardPrice from "@/components/CardPrice/CardPrice";
-import { axiosClient } from "@/apiClient/apiClient";
+import {axiosClient} from "@/apiClient/apiClient";
 
 type Props = {};
 
@@ -29,7 +29,7 @@ const MasterProjectPage = (props: Props) => {
   //   const [title, setTitle] = useState("");
   //   const [description, setDescription] = useState("");
   //   const {isSuccess, projectData, error, mutate} = createProjectHook();
-  const { projectId } = useParams();
+  const {projectId} = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -54,42 +54,43 @@ const MasterProjectPage = (props: Props) => {
   const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fileList = e.target.files;
+
+    if (!fileList) return;
+
     const newFiles = Array.from(fileList);
 
     const filesLength = files.length + newFiles.length;
-    if (filesLength >= 10) {
+    if (filesLength > 10) {
+      // Переконайтеся, що ліміт 10 не перевищується
+      console.error("You can only upload up to 10 files in total.");
       return;
     }
 
-    if (fileList) {
-      const newFiles: FileInterface[] = Array.from(fileList).map(
-        (file, index) => ({
-          id: index,
-          name: file.name,
-          size: file.size,
-        })
-      );
-      setFiles([...files, ...newFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
 
-      const formData = new FormData();
-      formData.append('files', files);
+    const formData = new FormData();
 
-      try{
-        const response=await axiosClient.post(`/project/upload/${projectId}`,formData,{
+    // Додаємо файли до FormData
+    newFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    try {
+      console.log("-=-=-=-=formData", formData);
+      const response = await axiosClient.post(
+        `/project/upload/${projectId}`, // Переконайтеся, що `projectId` має правильне значення
+        formData,
+        {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          }});
-        
-          console.log(response.data)
-      }
-      catch(e){
-        console.log(e)
-      }
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      console.log(files[0]);
+      console.log("Response data:", response.data);
+    } catch (e) {
+      console.error("Error uploading files:", e);
     }
-
-    console.log(fileList);
   };
 
   const removeItem = (id: string) => {
@@ -99,7 +100,7 @@ const MasterProjectPage = (props: Props) => {
 
   const addItem = (name: string) => {
     const id = Date.now().toString();
-    const newTag = { id: id, name: name };
+    const newTag = {id: id, name: name};
     setTagsList([...tagsList, newTag]);
   };
 
@@ -173,7 +174,7 @@ const MasterProjectPage = (props: Props) => {
             </div>
             <span className={styles.dragAndDropTextSpan}>
               Upload{" "}
-              <span style={{ borderBottom: "1px solid #343434" }}>
+              <span style={{borderBottom: "1px solid #343434"}}>
                 High Resolution JPG files
               </span>{" "}
               by dropping them into this window
