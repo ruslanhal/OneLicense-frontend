@@ -1,20 +1,34 @@
-export interface IProject {
+export interface IProjectEntity {
   id: string;
   title: string;
   description: string;
-  ownerName: string;
+  author: string;
   ownerId: string;
-  collections?: ICollection[];
+  images: IImage[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ICollection {
+export interface IImage {
   id: string;
   title: string;
-  description: string;
+  author: string;
+  price: string;
+  originalKey: string;
+  thumbnailKey: string;
+  originalUrl: string;
+  thumbnailUrl: string;
   projectId: string;
-  image?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+// export interface ICollection {
+//   id: string;
+//   title: string;
+//   description: string;
+//   projectId: string;
+//   image?: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }

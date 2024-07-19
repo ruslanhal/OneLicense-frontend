@@ -61,7 +61,7 @@ const CreateProjectPage = (props: Props) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className=" focus:outline-none text-[#888888]   text-center focus:none appearance-none"
-            placeholder="Title"
+            placeholder="Description"
             required
           />
         </div>

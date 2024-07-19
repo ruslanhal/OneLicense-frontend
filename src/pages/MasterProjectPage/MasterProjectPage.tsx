@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 
 import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
-import { useGetProject } from "@/apiClient/hooks/projectHooks";
+import {useGetProject} from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
 import CardPrice from "@/components/CardPrice/CardPrice";
-import { axiosClient } from "@/apiClient/apiClient";
+import {axiosClient} from "@/apiClient/apiClient";
 
 type Props = {};
 
@@ -27,7 +27,7 @@ interface Image {
 }
 
 const MasterProjectPage = (props: Props) => {
-  const { projectId } = useParams();
+  const {projectId} = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -73,8 +73,10 @@ const MasterProjectPage = (props: Props) => {
       formData.append("files", file);
     });
 
-    console.log(projectId)
+    console.log(projectId);
     try {
+      setIsDragAndDropOpened(false);
+
       console.log("-=-=-=-=formData", formData);
       const response = await axiosClient.post(
         `/project/upload/${projectId}`,
@@ -99,7 +101,7 @@ const MasterProjectPage = (props: Props) => {
 
   const addItem = (name: string) => {
     const id = Date.now().toString();
-    const newTag = { id: id, name: name };
+    const newTag = {id: id, name: name};
     setTagsList([...tagsList, newTag]);
   };
 
@@ -111,28 +113,23 @@ const MasterProjectPage = (props: Props) => {
       try {
         const response = await axiosClient.get(`/project/${projectId}`);
         console.log("API response:", response.data);
-  
-        const data = Array.from(response.data);
-        
-        for(item of data){
-          const images = item.images;
-          setImageList({...imageList, images});
-        }
-       
+
+        // const data = Array.from(response.data);
+        // console.log("-=-=-=-=-=-=data", data);
+        setImageList(response.data.images);
+
+        console.log("-=-=-=-=imageList", imageList);
+
         console.log("Images:", imageList);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
     };
-  
+
     if (projectId) {
       fetchFiles();
     }
   }, [projectId]);
-  
-  
-  
-  
 
   if (!projectId) {
     return <div>Error: Project is not available</div>;
@@ -175,7 +172,7 @@ const MasterProjectPage = (props: Props) => {
         </button>
       </div>
 
-      {isDragAndDropOpened && files.length === 0 ? (
+      {isDragAndDropOpened ? (
         <div className={styles.dragAndDropPosition}>
           <div className={styles.dragAndDropFormContainer}>
             <input
@@ -193,7 +190,7 @@ const MasterProjectPage = (props: Props) => {
               </div>
               <span className={styles.dragAndDropTextSpan}>
                 Upload{" "}
-                <span style={{ borderBottom: "1px solid #343434" }}>
+                <span style={{borderBottom: "1px solid #343434"}}>
                   High Resolution JPG files
                 </span>{" "}
                 by dropping them into this window
@@ -211,16 +208,18 @@ const MasterProjectPage = (props: Props) => {
           removeItem={removeItem}
         />
       ) : null}
-
-      {Array.isArray(imageList) && imageList.map((item, index) => (
-        <CardPrice
-          key={index}
-          title={item.title || "vfrrvvrf"}
-          price={item.price || "$15"}
-          author={item.author || "wdeewddwewded"}
-          imageUrl={item.thumbnailUrl || "dcdwe"}
-        />
-      ))}
+      <div className="flex flex-wrap justify-center">
+        {Array.isArray(imageList) &&
+          imageList.map((item, index) => (
+            <CardPrice
+              key={index}
+              title={item.title || "vfrrvvrf"}
+              price={item.price || "$15"}
+              author={item.author || "wdeewddwewded"}
+              imageUrl={item.thumbnailUrl || "dcdwe"}
+            />
+          ))}
+      </div>
     </div>
   );
 };

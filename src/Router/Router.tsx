@@ -10,7 +10,7 @@ import SignupPage from "@/pages/Auth/SignupPage";
 import AuthLayout from "@/Layouts/AuthLayout";
 import CreateProjectPage from "@/pages/CreateProjectPage/CreateProjectPage";
 import MasterProjectPage from "@/pages/MasterProjectPage/MasterProjectPage";
-import ContentCreator from '@/pages/ContentCreator/ContentCreator';
+import ContentCreator from "@/pages/ContentCreator/ContentCreator";
 import Licenses from "@/pages/Licenses/Licenses";
 
 export const router = createBrowserRouter([
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
         // children: [{path: "/collection/:collectionId", element: <><}],
       },
       {
-        path: "/content",
+        path: "/profile",
         element: (
           <ProtectedRoute
             role="creator"

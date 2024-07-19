@@ -1,10 +1,12 @@
 import Project from "@/components/Project/Project";
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 import defaultImg from "@/assets/Kaye_0147.png";
 
 import IconAddNew from "@/assets/IconAddNew";
 import {useNavigate} from "react-router-dom";
+import {getAllMyProjects} from "@/apiClient/services/project/project.service";
+import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
 
 interface Props {}
 
@@ -14,6 +16,17 @@ const HomePage = (props: Props) => {
     author: "Finnis Architecture & Interiors",
     imageUrl: defaultImg,
   });
+  const [projects, setProjects] = useState<IProjectEntity[]>([]);
+
+  useEffect(() => {
+    const fetchAllProjects = async () => {
+      const projects = await getAllMyProjects();
+
+      setProjects(projects);
+      console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+    };
+    fetchAllProjects();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -30,12 +43,13 @@ const HomePage = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-wrap justify-center">
-        {mockProjects.map((project, index) => (
+        {projects?.map((project, index) => (
           <Project
             key={index}
+            id={project.id}
             title={project.title}
             author={project.author}
-            imageUrl={project.imageUrl}
+            imageUrl={project?.images[0].thumbnailUrl}
           />
         ))}
       </div>
