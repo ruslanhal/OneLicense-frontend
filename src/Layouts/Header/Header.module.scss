@@ -2,13 +2,14 @@
     border:0.5px solid #EAEAEA;
     color:#999999;
     background-color: #F9F9F9;
-    padding: 10px;
+    padding: 10px 20px;
     font-size: 12px;
-    text-align: center;
+    text-align: start;
     border-radius: 80px;
     outline: none;
+    width:270px;
 
-    &:hover::placeholder {
+    &:hover {
         color: #444444;
     }
 

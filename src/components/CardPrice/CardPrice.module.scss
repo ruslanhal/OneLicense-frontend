@@ -32,15 +32,27 @@
     color: #888888;
   }
 
-  .button {
+  .buttons{
+    display: flex;
+    align-items: center;
+    gap:5px;
+
+    .button {
     margin-top: 10px;
-    padding: 10px;
+    padding: 10px 15px;
     border: 1px solid #eaeaea;
     background-color: #ffffff;
     color: #888888;
     font-size: 11px;
     border-radius: 80px;
-    width: 62px;
+    width: fit-content;
+    min-width: 62px;
+  }
+
+  .button:nth-child(2){
+    background-color: #F9F9F9;
+  }
+
   }
 
   .deleteIcon {

@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
 import Logo from "../../assets/logo.svg";
 import Notification from "@/assets/Notification/Notification";
+import Basket from "@/assets/Basket";
 
 import {authHook} from "@/apiClient/hooks/authHooks";
 import {useState} from "react";
@@ -11,7 +12,11 @@ import {IUser} from "@/common/types/user.types";
 import styles from './Header.module.scss'
 import { Link } from "react-router-dom";
 
-const Header = () => {
+interface HeaderProps{
+  isSupplier?:boolean;
+}
+
+const Header = ({isSupplier}:HeaderProps) => {
   // const {user} = authHook();
   // const data = queryClient.getQueryData(["profile"]);
   // console.log("-=-=-=-=-=data in header", data);
@@ -34,7 +39,7 @@ const Header = () => {
             className={styles.input}
           ></input>
 
-          <Notification />
+          {isSupplier?<Basket />:<Notification />}
 
           {/* <div>
             <span className="underline cursor-pointer">

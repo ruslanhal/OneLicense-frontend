@@ -1,13 +1,16 @@
 .container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #EAEAEA;
-    min-width: 20rem;
-    min-height: 450px;
-    max-width: 28rem;
-    max-height: 550px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eaeaea;
+  min-width: 20rem;
+  min-height: 450px;
+  max-width: 28rem;
+  height: fit-content;
+  position: relative;
+  padding-bottom: 20px;
+  padding-top: 40px;
 
     &:hover{
         background-color: #FAFAFA;
@@ -28,4 +31,12 @@
         font-size: 11px;
         color:#888888;
     }
+    .img {
+        margin-top: 4 0px;
+        width: 247px;
+        height: 368px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 }
