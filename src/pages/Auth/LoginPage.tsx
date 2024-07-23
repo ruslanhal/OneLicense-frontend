@@ -45,12 +45,7 @@ const Login = (props: Props) => {
 
   const onSubmit = async (data: ILoginReq) => {
     try {
-      console.log("-=-=-=-=-=-=-=-=data", data);
-      const cookies = document.cookie;
-      console.log("-=-=-=-=-=-=-=cookies", cookies);
-
       const respData = await login(data);
-      console.log("-=-=-=-=-resp", respData);
       navigate("/");
     } catch (error) {
       console.log("-=-=-=-=-=-error in comp catch-==-=-=-", error);

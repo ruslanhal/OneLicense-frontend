@@ -77,7 +77,6 @@ const MasterProjectPage = (props: Props) => {
     try {
       setIsDragAndDropOpened(false);
 
-      console.log("-=-=-=-=formData", formData);
       const response = await axiosClient.post(
         `/project/upload/${projectId}`,
         formData,
@@ -180,7 +179,7 @@ const MasterProjectPage = (props: Props) => {
               type="file"
               multiple
               className={styles.dragAndDropInput}
-              accept=".jpg, .jpeg, .png, .gif"
+              accept=".jpg, .jpeg, .png"
             />
             <div className={styles.dragAndDropFormBackground}></div>
 
