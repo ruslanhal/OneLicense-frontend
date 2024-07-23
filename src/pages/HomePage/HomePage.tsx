@@ -44,16 +44,16 @@ const HomePage = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-wrap justify-center">
-        
-        {projects?.map((project, index) => (
-          <Project
-            key={index}
-            id={project.id}
-            title={project.title}
-            author={project.author}
-            imageUrl={project?.images[0].thumbnailUrl}
-          />
-        ))}
+        {projects &&
+          projects.map((project, index) => (
+            <Project
+              key={index}
+              id={project.id}
+              title={project.title}
+              author={project.author}
+              imageUrl={project?.images[0].thumbnailUrl}
+            />
+          ))}
       </div>
     </>
   );
