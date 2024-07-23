@@ -23,12 +23,12 @@ export interface IImage {
   updatedAt: string;
 }
 
-// export interface ICollection {
-//   id: string;
-//   title: string;
-//   description: string;
-//   projectId: string;
-//   image?: string;
-//   createdAt: string;
-//   updatedAt: string;
-// }
+export interface ICollection {
+  id: string;
+  title: string;
+  description: string;
+  projectId: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}

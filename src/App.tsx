@@ -1,4 +1,3 @@
-import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 
 import "./App.scss";
@@ -7,7 +6,7 @@ import {authHook} from "./apiClient/hooks/authHooks";
 
 function App() {
   const navigate = useNavigate();
-  const {user, error, isLoading} = authHook();
+  const {user, isLoading} = authHook();
   // console.log("-==-=-=-=-=-=-app user", user);
   // console.log("-==-=-=-=-=-=-app error", error);
   if (!user && !isLoading) {

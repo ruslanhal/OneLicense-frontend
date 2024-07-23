@@ -20,7 +20,7 @@ export const login = async (data: ILoginReq) => {
     const response = await axiosClient.post("/auth/sign-in", data);
     console.log("-=-=-=-=-responsedata login", response.data);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log("-=-=-=-=errro", error);
     if (error?.response?.status === 401) {
       throw "Wrong credentials.";
