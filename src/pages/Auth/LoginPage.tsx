@@ -6,7 +6,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {z, ZodType} from "zod";
 import {ILoginReq} from "@/apiClient/types/auth.reqs.types";
 import {login} from "@/apiClient/services/auth/auth.service";
-import styles from './Auth.module.scss';
+import styles from "./Auth.module.scss";
 
 type Props = {};
 
@@ -46,6 +46,8 @@ const Login = (props: Props) => {
   const onSubmit = async (data: ILoginReq) => {
     try {
       console.log("-=-=-=-=-=-=-=-=data", data);
+      const cookies = document.cookie;
+      console.log("-=-=-=-=-=-=-=cookies", cookies);
 
       const respData = await login(data);
       console.log("-=-=-=-=-resp", respData);
@@ -73,11 +75,7 @@ const Login = (props: Props) => {
                   {errors.email?.message}
                 </span>
               )}
-              <input
-                {...field}
-                placeholder="Email"
-                className={styles.input}
-              />
+              <input {...field} placeholder="Email" className={styles.input} />
             </>
           )}
         />
