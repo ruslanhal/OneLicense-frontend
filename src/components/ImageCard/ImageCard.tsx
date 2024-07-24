@@ -1,5 +1,4 @@
-import React from "react";
-import styles from "./CardPrice.module.scss";
+import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 
 type Props = {
@@ -7,16 +6,15 @@ type Props = {
   author: string;
   imageUrl: string;
   price: string;
-  isSupplier?:boolean
+  isSupplier?: boolean;
 };
 
-const CardPrice = ({ title, author, imageUrl, price, isSupplier }: Props) => {
+const ImageCard = ({title, author, imageUrl, price, isSupplier}: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.deleteIcon}>
         <DelIcon />
       </div>
-     
 
       <div className={styles.img}>
         <img src={imageUrl} />
@@ -29,10 +27,12 @@ const CardPrice = ({ title, author, imageUrl, price, isSupplier }: Props) => {
 
       <div className={styles.buttons}>
         <button className={styles.button}>{price}</button>
-        {isSupplier?<button className={styles.button}>Add to cart</button>:null}
+        {isSupplier ? (
+          <button className={styles.button}>Add to cart</button>
+        ) : null}
       </div>
     </div>
   );
 };
-``;
-export default CardPrice;
+
+export default ImageCard;

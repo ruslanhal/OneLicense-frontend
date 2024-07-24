@@ -12,8 +12,9 @@ const ProtectedRoute = ({redirectPath, role, Component}: Props) => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<IUser>(["profile"]);
 
-  if (user && user?.role !== role && redirectPath) {
-    return <Navigate to={redirectPath} replace />;
+  if (user && user?.role !== role) {
+    if (redirectPath) return <Navigate to={redirectPath} replace />;
+    return <Navigate to={"/"} replace />;
   }
 
   // return <Navigate to={`${elementPath}/${role}`} replace />;

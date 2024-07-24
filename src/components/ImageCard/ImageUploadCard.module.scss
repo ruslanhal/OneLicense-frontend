@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eaeaea;
+  min-width: 20rem;
+  min-height: 450px;
+  max-width: 28rem;
+
+  overflow: hidden;
+
+  position: relative;
+  padding-bottom: 20px;
+  padding-top: 40px;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+
+  .projectInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .title {
+    color: #444444;
+    font-size: 11px;
+  }
+  .span {
+    font-size: 11px;
+    color: #888888;
+  }
+
+  .img {
+    margin-top: 4 0px;
+    width: 247px;
+    height: 368px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// .container {
+//   position: relative;
+//   width: 200px;
+//   height: 300px;
+//   border: 1px solid #ccc;
+//   overflow: hidden;
+// }
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #e0d8cf;
+  transition: height 50s ease;
+}

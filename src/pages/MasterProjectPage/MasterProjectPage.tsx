@@ -9,8 +9,9 @@ import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
-import CardPrice from "@/components/CardPrice/CardPrice";
 import {axiosClient} from "@/apiClient/apiClient";
+import ImageCard from "@/components/ImageCard/ImageCard";
+import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 
 type Props = {};
 
@@ -26,30 +27,34 @@ interface Image {
   thumbnailUrl: string;
 }
 
+const mockTags = [
+  {
+    id: "1",
+    name: "Signorino",
+  },
+  {
+    id: "2",
+    name: "Inlite",
+  },
+  {
+    id: "3",
+    name: "Made By Storey",
+  },
+  {
+    id: "4",
+    name: "Brodware",
+  },
+];
+
 const MasterProjectPage = (props: Props) => {
   const {projectId} = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [tagsList, setTagsList] = useState<Tag[]>([
-    {
-      id: "1",
-      name: "Signorino",
-    },
-    {
-      id: "2",
-      name: "Inlite",
-    },
-    {
-      id: "3",
-      name: "Made By Storey",
-    },
-    {
-      id: "4",
-      name: "Brodware",
-    },
-  ]);
+  const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
   const [imageList, setImageList] = useState<Image[]>([]);
+
+  const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
   const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -58,6 +63,7 @@ const MasterProjectPage = (props: Props) => {
     if (!fileList) return;
 
     const newFiles = Array.from(fileList);
+    console.log("-=-=-=-=-=-=-=newFiles", newFiles);
 
     const filesLength = files.length + newFiles.length;
     if (filesLength > 10) {
@@ -66,8 +72,16 @@ const MasterProjectPage = (props: Props) => {
     }
 
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    // setUploadProgress(() => newFiles.map(() => 0));
+    setUploadProgress((prevProgress) => [
+      ...prevProgress,
+      ...newFiles.map(() => 0),
+    ]);
+    console.log("-=-=-=-=-=-=-files", files);
 
     const formData = new FormData();
+
+    console.log("-=-=-=-=-uploadProgress", uploadProgress);
 
     newFiles.forEach((file) => {
       formData.append("files", file);
@@ -83,6 +97,19 @@ const MasterProjectPage = (props: Props) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const totalLength = progressEvent.total;
+            if (totalLength) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / totalLength
+              );
+              setUploadProgress((prevProgress) =>
+                prevProgress.map(
+                  (p, index) => (index === files.length ? progress : p) // Оновлюємо прогрес для поточного файлу
+                )
+              );
+            }
           },
         }
       );
@@ -119,7 +146,7 @@ const MasterProjectPage = (props: Props) => {
 
         console.log("-=-=-=-=imageList", imageList);
 
-        console.log("Images:", imageList);
+        // console.log("Images:", imageList);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
@@ -208,9 +235,16 @@ const MasterProjectPage = (props: Props) => {
         />
       ) : null}
       <div className="flex flex-wrap justify-center">
+        {files.map((file, index) => (
+          <ImageUploadCard
+            key={index}
+            title={file.name}
+            progress={uploadProgress[index]}
+          />
+        ))}
         {Array.isArray(imageList) &&
           imageList.map((item, index) => (
-            <CardPrice
+            <ImageCard
               key={index}
               title={item.title || "vfrrvvrf"}
               price={item.price || "$15"}

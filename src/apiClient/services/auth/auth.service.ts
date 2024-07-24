@@ -29,6 +29,15 @@ export const login = async (data: ILoginReq) => {
   }
 };
 
+export const refreshToken = async () => {
+  try {
+    const response = await axiosClient.get("/auth/refresh");
+    return response.data; // Очікується, що тут буде новий токен
+  } catch (error) {
+    throw new Error("Could not refresh token");
+  }
+};
+
 export const logout = async () => {
   try {
     await axiosClient.post("/auth/sign-out");
