@@ -1,5 +1,16 @@
+.tagsMainContainer{
+    position: absolute;
+    top: 0;
+    background-color: #fff;
+    width: 100%;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .tagsContainer{
-    width:500px;
+    width:65%;
     height: fit-content;
     display: flex;
     flex-direction: column;

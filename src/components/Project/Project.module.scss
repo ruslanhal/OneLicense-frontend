@@ -4,9 +4,9 @@
   justify-content: center;
   align-items: center;
   border: 1px solid #eaeaea;
-  min-width: 20rem;
-  min-height: 450px;
-  max-width: 28rem;
+  min-width: 16rem;
+  max-height: 450px;
+  max-width: 100%;
   height: fit-content;
   position: relative;
   padding-bottom: 20px;
@@ -33,7 +33,7 @@
     }
     .img {
         margin-top: 4 0px;
-        width: 247px;
+        width: 240px;
         height: 368px;
         display: flex;
         align-items: center;

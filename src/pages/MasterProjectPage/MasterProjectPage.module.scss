@@ -1,9 +1,6 @@
 .master_project__container {
   padding-bottom: 40px;
   height: fit-content;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .dragAndDropPosition {
@@ -15,7 +12,7 @@
 
 .dragAndDropFormContainer {
   position: relative;
-  height: 510px;
+  height: 60vh;
   width: 100%;
   border-radius: 6px;
   display: flex;
@@ -26,12 +23,12 @@
 
 .dragAndDropFormBackground {
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.739);
-  //   opacity: 20%;
+  background-color: rgba(255, 255, 255, 0.8);
+    // opacity: 20%;
   width: 100%;
   height: 510px;
   pointer-events: none;
-  border: solid 1px #343434;
+  border-top: solid 1px #343434;
 }
 
 .dragAndDropInput {
@@ -78,4 +75,22 @@
   grid-template-columns: repeat(3, fit-content(100%));
   grid-template-rows: repeat(2, fit-content(100%));
   pointer-events: none;
+}
+
+.cancelButton {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  align-self: flex-end;
+  color: #343434;
+  background-color: #F5F5F5;
+  opacity: 67%;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 2000;
+  border-radius: 100%;
+  &:hover {
+    background-color: #E0D8CF
+  }
 }

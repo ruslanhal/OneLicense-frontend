@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 import {getAllMyProjects} from "@/apiClient/services/project/project.service";
 import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
 import PurchaseRequest from "@/components/PurchaseRequest/PurchaseRequest";
+import styles from "./HomePage.module.scss";
 
 interface Props {}
 
@@ -43,16 +44,16 @@ const HomePage = (props: Props) => {
           <IconAddNew />
         </button>
       </div>
-      <div className="flex flex-wrap justify-center">
+      <div className={'grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}>
         {projects &&
           projects.map((project, index) => (
             <Project
-              key={index}
-              id={project.id}
-              title={project.title}
-              author={project.author}
-              imageUrl={project?.images[0].thumbnailUrl}
-            />
+            key={index}
+            id={project.id}
+            title={project.title}
+            author={project.author}
+            imageUrl={project?.images[0].thumbnailUrl}
+          />
           ))}
       </div>
     </>

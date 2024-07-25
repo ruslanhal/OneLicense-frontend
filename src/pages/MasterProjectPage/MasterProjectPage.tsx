@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
-import {useGetProject} from "@/apiClient/hooks/projectHooks";
+import { useGetProject } from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
-import {axiosClient} from "@/apiClient/apiClient";
+import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
 import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
+import CancelIcon from "../../assets/icon_cancel.svg"
 
 type Props = {};
 
@@ -47,7 +48,7 @@ const mockTags = [
 ];
 
 const MasterProjectPage = (props: Props) => {
-  const {projectId} = useParams();
+  const { projectId } = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -127,7 +128,7 @@ const MasterProjectPage = (props: Props) => {
 
   const addItem = (name: string) => {
     const id = Date.now().toString();
-    const newTag = {id: id, name: name};
+    const newTag = { id: id, name: name };
     setTagsList([...tagsList, newTag]);
   };
 
@@ -168,8 +169,21 @@ const MasterProjectPage = (props: Props) => {
     isSuccess,
   } = useGetProject(projectId);
 
+  if (isTagsOpen) {
+    return (
+      <div className={styles.master_project__container} > 
+        <TagsForm
+          closeForm={closeForm}
+          addItem={addItem}
+          tagsList={tagsList}
+          removeItem={removeItem}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className={styles.master_project__container}>
+    <div  className={styles.master_project__container}>
       <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
         <h1 className="focus:outline-none text-[#888888] text-center">
@@ -193,14 +207,22 @@ const MasterProjectPage = (props: Props) => {
         >
           <Tabs />
         </button>
-        <button onClick={() => {}}>
+        <button onClick={() => { }}>
           <Save />
         </button>
       </div>
 
       {isDragAndDropOpened ? (
-        <div className={styles.dragAndDropPosition}>
+        <div className={styles.dragAndDropPosition} >
+
           <div className={styles.dragAndDropFormContainer}>
+            <div className={styles.buttonSection}>
+              <button
+                onClick={() => setIsDragAndDropOpened(false)}
+                className={styles.cancelButton}>
+                <img src={CancelIcon} width={24} height={24} alt="Cancel" />
+              </button>
+            </div>
             <input
               onChange={handleDragAndDrop}
               type="file"
@@ -216,7 +238,7 @@ const MasterProjectPage = (props: Props) => {
               </div>
               <span className={styles.dragAndDropTextSpan}>
                 Upload{" "}
-                <span style={{borderBottom: "1px solid #343434"}}>
+                <span style={{ borderBottom: "1px solid #343434" }}>
                   High Resolution JPG files
                 </span>{" "}
                 by dropping them into this window
@@ -225,16 +247,11 @@ const MasterProjectPage = (props: Props) => {
           </div>
         </div>
       ) : null}
-
-      {isTagsOpen ? (
-        <TagsForm
-          closeForm={closeForm}
-          addItem={addItem}
-          tagsList={tagsList}
-          removeItem={removeItem}
-        />
-      ) : null}
-      <div className="flex flex-wrap justify-center">
+      
+      <div className={
+        `${imageList && imageList.length >= 4 ? 
+        'grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ' 
+        : 'flex justify-center'}`}>
         {files.map((file, index) => (
           <ImageUploadCard
             key={index}
