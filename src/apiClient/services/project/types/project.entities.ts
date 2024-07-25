@@ -32,3 +32,8 @@ export interface ICollection {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IPresignedURL {
+  url: string;
+  fields: Record<string, string>;
+}

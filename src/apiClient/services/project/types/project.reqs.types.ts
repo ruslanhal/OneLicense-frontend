@@ -11,3 +11,13 @@ export interface IProject {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IGeneratePresignedUrl {
+  files: IFileReq[];
+}
+
+export interface IFileReq {
+  title: string;
+  description: string;
+  mimeType: string;
+}

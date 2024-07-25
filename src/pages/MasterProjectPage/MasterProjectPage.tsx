@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
+import imageCompression from "browser-image-compression";
 
 import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
@@ -12,6 +13,13 @@ import Save from "@/assets/Save";
 import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
 import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
+import {
+  generatePresignedUrls,
+  uploadImageToS3,
+  wrapperUploadImages,
+} from "@/apiClient/services/project/project.service";
+import axios, {AxiosProgressEvent} from "axios";
+import {IPresignedURL} from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg"
 
 type Props = {};
@@ -57,6 +65,8 @@ const MasterProjectPage = (props: Props) => {
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
+  const [flag, setFlag] = useState(0);
+
   const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fileList = e.target.files;
@@ -74,48 +84,116 @@ const MasterProjectPage = (props: Props) => {
 
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
     // setUploadProgress(() => newFiles.map(() => 0));
-    setUploadProgress((prevProgress) => [
-      ...prevProgress,
-      ...newFiles.map(() => 0),
-    ]);
+
     console.log("-=-=-=-=-=-=-files", files);
 
-    const formData = new FormData();
+    // const formData = new FormData();
 
     console.log("-=-=-=-=-uploadProgress", uploadProgress);
 
-    newFiles.forEach((file) => {
-      formData.append("files", file);
-    });
+    // newFiles.forEach((file) => {
+    //   formData.append("files", file);
+    // });
 
-    console.log(projectId);
+    // console.log(projectId);
     try {
       setIsDragAndDropOpened(false);
 
-      const response = await axiosClient.post(
-        `/project/upload/${projectId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const totalLength = progressEvent.total;
-            if (totalLength) {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / totalLength
-              );
-              setUploadProgress((prevProgress) =>
-                prevProgress.map(
-                  (p, index) => (index === files.length ? progress : p) // Оновлюємо прогрес для поточного файлу
-                )
-              );
-            }
-          },
-        }
-      );
+      if (!projectId) {
+        return;
+      }
 
-      console.log("Response data:", response.data);
+      const filesArr = newFiles.map((file) => {
+        return {title: file.name, description: "", mimeType: file.type};
+      });
+      // console.log("-=-=-=-=-=-=filesArr", filesArr);
+
+      //req
+      const presignedUrlArr = await generatePresignedUrls(projectId, filesArr);
+      /////////////////////////////
+      const progressArr = new Array(newFiles.length).fill(0);
+      setUploadProgress(progressArr);
+
+      const uploadPromises = Array.from(newFiles).map(async (file, index) => {
+        const presignedOrigUrl: IPresignedURL =
+          presignedUrlArr[index].presignedOrigUrl;
+
+        const presignedThumbnailUrl =
+          presignedUrlArr[index].presignedThumbnailUrl;
+
+        const {url: origUrl, fields: origFields} = presignedOrigUrl;
+        const {url: thumbnailUrl, fields: thumbnailFields} =
+          presignedThumbnailUrl;
+
+        const origFormData = new FormData();
+
+        const thumbnailFormData = new FormData();
+
+        // Додайте всі поля з presigned URL до formData
+        Object.keys(origFields).forEach((key) => {
+          origFormData.append(key, origFields[key]);
+        });
+
+        Object.keys(thumbnailFields).forEach((key) => {
+          thumbnailFormData.append(key, thumbnailFields[key]);
+        });
+
+        // Додайте файл до formData
+        origFormData.append("file", file);
+
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 300,
+          useWebWorker: true,
+        };
+
+        const compressedImage = await imageCompression(file, options);
+
+        thumbnailFormData.append("file", compressedImage);
+
+        return wrapperUploadImages(
+          {
+            url: origUrl,
+            formData: origFormData,
+            progressArr,
+            index,
+            setUploadProgress,
+          },
+          {
+            url: thumbnailUrl,
+            formData: thumbnailFormData,
+
+            index,
+          }
+        );
+        // Завантаження файлу з axios
+        // return axios.post(url, formData, {
+        //   onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        //     const percent = Math.round(
+        //       (progressEvent.loaded * 100) / progressEvent.total
+        //     );
+        //     progressArr[index] = percent;
+        //     setUploadProgress([...progressArr]);
+        //   },
+        // });
+      });
+
+      await Promise.all(uploadPromises);
+      // alert("Files uploaded successfully");
+      setFiles([]);
+      setFlag(1);
+
+      // const response = await axiosClient.post(
+      //   `/project/upload/${projectId}`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+
+      console.log("-=-=-=-=-=-=-presignedUrlArr:", presignedUrlArr);
     } catch (e) {
       console.error("Error uploading files:", e);
     }
@@ -135,6 +213,7 @@ const MasterProjectPage = (props: Props) => {
   const closeForm = (value: boolean) => {
     setIsTagsOpen(value);
   };
+
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -154,9 +233,10 @@ const MasterProjectPage = (props: Props) => {
     };
 
     if (projectId) {
+      setFlag(0);
       fetchFiles();
     }
-  }, [projectId]);
+  }, [projectId, flag]);
 
   if (!projectId) {
     return <div>Error: Project is not available</div>;
