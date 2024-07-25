@@ -102,11 +102,3 @@ export const uploadImageToS3 = async ({
     },
   });
 };
-
-export const compressImage = async (buffer: Buffer) => {
-  const thumbnailBuffer = await sharp(buffer)
-    .resize(300, 300, {fit: "inside", withoutEnlargement: true})
-    .toBuffer();
-
-  return thumbnailBuffer;
-};
