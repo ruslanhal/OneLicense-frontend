@@ -1,3 +1,4 @@
+import axios from "axios";
 import {axiosClient} from "../../apiClient";
 import {ILoginReq, ISignUpReq} from "../../types/auth.reqs.types";
 
@@ -31,8 +32,12 @@ export const login = async (data: ILoginReq) => {
 
 export const refreshToken = async () => {
   try {
-    const response = await axiosClient.get("/auth/refresh");
-    return response.data; // Очікується, що тут буде новий токен
+    const response = await axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/auth/refresh`,
+
+      {withCredentials: true}
+    );
+    return response.data;
   } catch (error) {
     throw new Error("Could not refresh token");
   }
