@@ -7,11 +7,12 @@ type Props = {
   imageUrl: string;
   price: string;
   isSupplier?: boolean;
+  onClick?:()=>void;
 };
 
-const ImageCard = ({title, author, imageUrl, price, isSupplier}: Props) => {
+const ImageCard = ({title, author, imageUrl, price, isSupplier, onClick}: Props) => {
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={onClick}>
       <div className={styles.deleteIcon}>
         <DelIcon />
       </div>

@@ -14,6 +14,12 @@ import {axiosClient} from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
 import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
+import {
   generatePresignedUrls,
   uploadImageToS3,
   wrapperUploadImages,
@@ -21,6 +27,7 @@ import {
 import axios, {AxiosProgressEvent} from "axios";
 import {IPresignedURL} from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg";
+import ImageModal from "@/components/ImageModal/ImageModal";
 
 type Props = {};
 
@@ -62,6 +69,8 @@ const MasterProjectPage = (props: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
   const [imageList, setImageList] = useState<Image[]>([]);
+
+  const [openedImage, setOpenedImage] = useState<String>("");
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
@@ -215,6 +224,21 @@ const MasterProjectPage = (props: Props) => {
     setIsTagsOpen(value);
   };
 
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const reorderedList = Array.from(imageList);
+    const [movedItem] = reorderedList.splice(result.source.index, 1);
+    reorderedList.splice(result.destination.index, 0, movedItem);
+
+    setImageList(reorderedList);
+  };
+
+  const openImage = (value: string) => {
+    setOpenedImage(value);
+    console.log(value);
+  };
+
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -225,7 +249,7 @@ const MasterProjectPage = (props: Props) => {
         // console.log("-=-=-=-=-=-=data", data);
         setImageList(response.data.images);
 
-        console.log("-=-=-=-=imageList", imageList);
+        console.log("-=-=-=-=imageList", response.data.images);
 
         // console.log("Images:", imageList);
       } catch (error) {
@@ -263,8 +287,16 @@ const MasterProjectPage = (props: Props) => {
     );
   }
 
+  const close = () => {
+    setOpenedImage("");
+  };
+
   return (
     <div className={styles.master_project__container}>
+      {openedImage !== "" ? (
+        <ImageModal url={openedImage} close={() => close()} />
+      ) : null}
+
       <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
         <h1 className="focus:outline-none text-[#888888] text-center">
@@ -332,7 +364,7 @@ const MasterProjectPage = (props: Props) => {
       <div
         className={`${
           imageList && imageList.length >= 4
-            ? "grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 "
+            ? "flex justify-center"
             : "flex justify-center"
         }`}
       >
@@ -343,16 +375,39 @@ const MasterProjectPage = (props: Props) => {
             progress={uploadProgress[index]}
           />
         ))}
-        {Array.isArray(imageList) &&
-          imageList.map((item, index) => (
-            <ImageCard
-              key={index}
-              title={item.title || "vfrrvvrf"}
-              price={item.price || "$15"}
-              author={item.author || "wdeewddwewded"}
-              imageUrl={item.thumbnailUrl || "dcdwe"}
-            />
-          ))}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="droppable" direction="both">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full"
+              >
+                {imageList.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="image-card"
+                      >
+                        <ImageCard
+                          title={item.title || "vfrrvvrf"}
+                          price={item.price || "$15"}
+                          author={item.author || "wdeewddwewded"}
+                          imageUrl={item.thumbnailUrl || "dcdwe"}
+                          onClick={() => openImage(item.originalUrl)}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     </div>
   );
