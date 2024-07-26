@@ -37,10 +37,12 @@ interface Tag {
 }
 
 interface Image {
+  id: string;
   title: string;
   price: string;
   author: string;
   thumbnailUrl: string;
+  originalUrl: string;
 }
 
 const mockTags = [
@@ -70,7 +72,7 @@ const MasterProjectPage = (props: Props) => {
   const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
   const [imageList, setImageList] = useState<Image[]>([]);
 
-  const [openedImage, setOpenedImage] = useState<String>("");
+  const [openedImage, setOpenedImage] = useState<string>("");
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 

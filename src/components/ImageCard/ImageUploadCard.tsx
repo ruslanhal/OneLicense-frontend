@@ -10,9 +10,11 @@ type Props = {
 const ImageUploadCard = ({title, author, progress}: Props) => {
   return (
     <div className={styles.container}>
-      {progress==='100%'?<div className={styles.deleteIcon}>
-        <DelIcon />
-      </div>:null}
+      {progress === 100 ? (
+        <div className={styles.deleteIcon}>
+          <DelIcon />
+        </div>
+      ) : null}
 
       <div className={styles.img}></div>
       <div

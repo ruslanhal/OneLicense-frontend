@@ -25,7 +25,13 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false
   },
-  "exclude": ["check-env.js"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "check-env.js" // Ensure this list is comprehensive
+  ],
+
   "include": [
     "src",
     "@types/i18n.d.ts",
