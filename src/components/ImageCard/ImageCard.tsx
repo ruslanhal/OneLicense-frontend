@@ -2,6 +2,16 @@ import {useState} from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 
+interface Image {
+  id: string;
+  title: string;
+  price: string;
+  author: string;
+  thumbnailUrl: string;
+  originalUrl: string;
+  order: number;
+}
+
 type Props = {
   title: string;
   author: string;
@@ -61,9 +71,7 @@ const ImageCard = ({
 
       <div className={styles.buttons}>
         <button className={styles.button}>{price}</button>
-        {isSupplier ? (
-          <button className={styles.button}>Add to cart</button>
-        ) : null}
+        {isSupplier && <button className={styles.button}>Add to cart</button>}
       </div>
     </div>
   );

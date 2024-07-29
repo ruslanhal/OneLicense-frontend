@@ -12,6 +12,7 @@ import {
 import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
 import PurchaseRequest from "@/components/PurchaseRequest/PurchaseRequest";
 import styles from "./HomePage.module.scss";
+import Skeleton from "@/components/Skeleton/Skeleton";
 
 interface Props {}
 
@@ -19,13 +20,22 @@ const HomePage = (props: Props) => {
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState<IProjectEntity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   useEffect(() => {
     const fetchAllProjects = async () => {
-      const projects = await getAllMyProjects();
+      setIsLoading(true);
+      try {
+        const projects = await getAllMyProjects();
 
-      setProjects(projects);
-      console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+        setProjects(projects);
+        console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchAllProjects();
   }, []);
@@ -67,6 +77,8 @@ const HomePage = (props: Props) => {
             />
           ))}
       </div>
+
+      {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </>
   );
 };
