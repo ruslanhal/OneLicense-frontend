@@ -1,21 +1,28 @@
-import {useEffect, useState} from "react";
-import {useQueryClient} from "@tanstack/react-query";
-import {useNavigate} from "react-router-dom";
-
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import styles from "./ProfilePage.module.scss";
 import ChevronDown from "../../assets/ChevronDown.svg";
 import LogOut from "@/assets/LogOut";
 import DeleteAccount from "@/assets/DeleteAccount";
-import {logout} from "@/apiClient/services/auth/auth.service";
-import {IUser} from "@/common/types/user.types";
+import { logout } from "@/apiClient/services/auth/auth.service";
+import { IUser } from "@/common/types/user.types";
+import { AxiosError } from "axios";
+import { axiosClient } from "@/apiClient/apiClient";
+import { useState } from "react";
+
+const fetchUserProfile = async (): Promise<IUser> => {
+  const response = await axiosClient.get("/auth/me");
+  return response.data;
+};
 
 export default function ProfilePage() {
   const [isAUDOpened, setIsAUDOpened] = useState(false);
   const [price, setPrice] = useState("$15");
 
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<IUser>(["profile"]);
-  console.log("-=-=-=-=-=-user ", user);
+  const { data: user, isLoading, error } = useQuery<IUser, AxiosError>({
+    queryKey: ["profile"],
+    queryFn: fetchUserProfile,
+  });
 
   const navigate = useNavigate();
 
@@ -23,6 +30,9 @@ export default function ProfilePage() {
     await logout();
     navigate("/auth");
   };
+
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className={styles.contantCreatorContainer}>
       <div className={styles.contantCreatorHeader}>
@@ -34,7 +44,7 @@ export default function ProfilePage() {
         <span className={styles.contantCreatorSpan}>
           {user?.role === "creator" ? "Content Creator" : "Supplier"}
         </span>
-        <LogOut onClick={() => handleLogout()} />
+        <LogOut onClick={handleLogout} />
       </div>
 
       <div className={styles.contentContainer}>
@@ -52,18 +62,9 @@ export default function ProfilePage() {
           <span className={styles.contentItemUserName}>{user?.email}</span>
 
           <div className={styles.buttons}>
-            <input
-              className={styles.contentItemInput}
-              placeholder="Current Password"
-            />
-            <input
-              className={styles.contentItemInput}
-              placeholder="New Password"
-            />
-            <input
-              className={styles.contentItemInput}
-              placeholder="Retype Password"
-            />
+            <input className={styles.contentItemInput} placeholder="Current Password" />
+            <input className={styles.contentItemInput} placeholder="New Password" />
+            <input className={styles.contentItemInput} placeholder="Retype Password" />
 
             <button className={styles.contentItemButtonSubmit}>Submit</button>
           </div>
@@ -113,8 +114,7 @@ export default function ProfilePage() {
         <div className={styles.contentItem}>
           <div className={styles.contentItemTitle}>Delete Account</div>
           <span className={styles.contentItemDeleteAccountText}>
-            This will permanently delete all projects, licenses and information
-            from Editions. This cannot be undone
+            This will permanently delete all projects, licenses and information from Editions. This cannot be undone
           </span>
 
           <DeleteAccount />

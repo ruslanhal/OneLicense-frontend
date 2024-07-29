@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 
 import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
-import {useGetProject} from "@/apiClient/hooks/projectHooks";
+import { useGetProject } from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
-import {axiosClient} from "@/apiClient/apiClient";
+import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
 import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 import {
@@ -24,10 +24,11 @@ import {
   uploadImageToS3,
   wrapperUploadImages,
 } from "@/apiClient/services/project/project.service";
-import axios, {AxiosProgressEvent} from "axios";
-import {IPresignedURL} from "@/apiClient/services/project/types/project.entities";
+import { IPresignedURL } from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg";
 import ImageModal from "@/components/ImageModal/ImageModal";
+import Loader from "@/components/Loader/Loader";
+import Skeleton from "@/components/Skeleton/Skeleton";
 
 type Props = {};
 
@@ -43,6 +44,7 @@ interface Image {
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
+  order:number
 }
 
 const mockTags = [
@@ -65,7 +67,7 @@ const mockTags = [
 ];
 
 const MasterProjectPage = (props: Props) => {
-  const {projectId} = useParams();
+  const { projectId } = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -73,6 +75,7 @@ const MasterProjectPage = (props: Props) => {
   const [imageList, setImageList] = useState<Image[]>([]);
 
   const [openedImage, setOpenedImage] = useState<string>("");
+  const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
@@ -94,19 +97,9 @@ const MasterProjectPage = (props: Props) => {
     }
 
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    // setUploadProgress(() => newFiles.map(() => 0));
 
     console.log("-=-=-=-=-=-=-files", files);
 
-    // const formData = new FormData();
-
-    console.log("-=-=-=-=-uploadProgress", uploadProgress);
-
-    // newFiles.forEach((file) => {
-    //   formData.append("files", file);
-    // });
-
-    // console.log(projectId);
     try {
       setIsDragAndDropOpened(false);
 
@@ -115,13 +108,11 @@ const MasterProjectPage = (props: Props) => {
       }
 
       const filesArr = newFiles.map((file) => {
-        return {title: file.name, description: "", mimeType: file.type};
+        return { title: file.name, description: "", mimeType: file.type };
       });
-      // console.log("-=-=-=-=-=-=filesArr", filesArr);
 
-      //req
       const presignedUrlArr = await generatePresignedUrls(projectId, filesArr);
-      /////////////////////////////
+
       const progressArr = new Array(newFiles.length).fill(0);
       setUploadProgress(progressArr);
 
@@ -132,15 +123,13 @@ const MasterProjectPage = (props: Props) => {
         const presignedThumbnailUrl =
           presignedUrlArr[index].presignedThumbnailUrl;
 
-        const {url: origUrl, fields: origFields} = presignedOrigUrl;
-        const {url: thumbnailUrl, fields: thumbnailFields} =
+        const { url: origUrl, fields: origFields } = presignedOrigUrl;
+        const { url: thumbnailUrl, fields: thumbnailFields } =
           presignedThumbnailUrl;
 
         const origFormData = new FormData();
-
         const thumbnailFormData = new FormData();
 
-        // Додайте всі поля з presigned URL до formData
         Object.keys(origFields).forEach((key) => {
           origFormData.append(key, origFields[key]);
         });
@@ -149,7 +138,6 @@ const MasterProjectPage = (props: Props) => {
           thumbnailFormData.append(key, thumbnailFields[key]);
         });
 
-        // Додайте файл до formData
         origFormData.append("file", file);
 
         const options = {
@@ -178,32 +166,12 @@ const MasterProjectPage = (props: Props) => {
             index,
           }
         );
-        // Завантаження файлу з axios
-        // return axios.post(url, formData, {
-        //   onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-        //     const percent = Math.round(
-        //       (progressEvent.loaded * 100) / progressEvent.total
-        //     );
-        //     progressArr[index] = percent;
-        //     setUploadProgress([...progressArr]);
-        //   },
-        // });
       });
 
       await Promise.all(uploadPromises);
-      // alert("Files uploaded successfully");
+
       setFiles([]);
       setFlag(1);
-
-      // const response = await axiosClient.post(
-      //   `/project/upload/${projectId}`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
 
       console.log("-=-=-=-=-=-=-presignedUrlArr:", presignedUrlArr);
     } catch (e) {
@@ -216,9 +184,13 @@ const MasterProjectPage = (props: Props) => {
     setTagsList(updatedTagsList);
   };
 
+  const handleAddImagesOrder=(list:Image[])=>{
+    setImageList(list);
+  }
+
   const addItem = (name: string) => {
     const id = Date.now().toString();
-    const newTag = {id: id, name: name};
+    const newTag = { id: id, name: name };
     setTagsList([...tagsList, newTag]);
   };
 
@@ -226,14 +198,14 @@ const MasterProjectPage = (props: Props) => {
     setIsTagsOpen(value);
   };
 
-  const onDragEnd = (result: DropResult) => {
+  const handleOnDragEnd = (result) => {
     if (!result.destination) return;
 
-    const reorderedList = Array.from(imageList);
-    const [movedItem] = reorderedList.splice(result.source.index, 1);
-    reorderedList.splice(result.destination.index, 0, movedItem);
+    const updatedItems = Array.from(imageList);
+    const [reorderedItem] = updatedItems.splice(result.source.index, 1);
+    updatedItems.splice(result.destination.index, 0, reorderedItem);
 
-    setImageList(reorderedList);
+    setImageList(updatedItems);
   };
 
   const openImage = (value: string) => {
@@ -247,13 +219,19 @@ const MasterProjectPage = (props: Props) => {
         const response = await axiosClient.get(`/project/${projectId}`);
         console.log("API response:", response.data);
 
-        // const data = Array.from(response.data);
-        // console.log("-=-=-=-=-=-=data", data);
-        setImageList(response.data.images);
 
-        console.log("-=-=-=-=imageList", response.data.images);
+        let index=0;
+        const newArr=response.data.images.map(item=>{
+          index=index+1;
+          return {
+            ...item,
+            order:index
+          }
+        });
 
-        // console.log("Images:", imageList);
+        setImageList(newArr);
+
+        console.log("-=-=-=-=imageList", imageList);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
@@ -269,6 +247,10 @@ const MasterProjectPage = (props: Props) => {
     return <div>Error: Project is not available</div>;
   }
 
+  useEffect(()=>{
+  console.log(imageList)
+  }, [imageList])
+
   const {
     isLoading,
     project: projectData,
@@ -279,6 +261,7 @@ const MasterProjectPage = (props: Props) => {
   if (isTagsOpen) {
     return (
       <div className={styles.master_project__container}>
+        {isLoading ? <Loader /> : null}
         <TagsForm
           closeForm={closeForm}
           addItem={addItem}
@@ -301,9 +284,16 @@ const MasterProjectPage = (props: Props) => {
 
       <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
+        {isLoading ? <div className=""></div> : null}
         <h1 className="focus:outline-none text-[#888888] text-center">
           {projectData?.description}
         </h1>
+        {isLoading ? (
+          <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px]"></div>
+        ) : null}
+        {isLoading ? (
+          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md"></div>
+        ) : null}
       </div>
       <div className="flex justify-center items-center gap-2 mt-4 mb-5">
         <button
@@ -353,7 +343,7 @@ const MasterProjectPage = (props: Props) => {
               </div>
               <span className={styles.dragAndDropTextSpan}>
                 Upload{" "}
-                <span style={{borderBottom: "1px solid #343434"}}>
+                <span style={{ borderBottom: "1px solid #343434" }}>
                   High Resolution JPG files
                 </span>{" "}
                 by dropping them into this window
@@ -377,40 +367,25 @@ const MasterProjectPage = (props: Props) => {
             progress={uploadProgress[index]}
           />
         ))}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable" direction="both">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full"
-              >
-                {imageList.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className="image-card"
-                      >
-                        <ImageCard
-                          title={item.title || "vfrrvvrf"}
-                          price={item.price || "$15"}
-                          author={item.author || "wdeewddwewded"}
-                          imageUrl={item.thumbnailUrl || "dcdwe"}
-                          onClick={() => openImage(item.originalUrl)}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full">
+          {imageList.sort((a, b) => a.order - b.order).map((item) => (
+            <div key={item.id} className="image-card">
+              <ImageCard
+                title={item.title || "vfrrvvrf"}
+                price={item.price || "$15"}
+                author={item.author || "wdeewddwewded"}
+                imageUrl={item.thumbnailUrl || "dcdwe"}
+                onClick={() => openImage(item.originalUrl)}
+                order={item.order}
+                setImageList={handleAddImagesOrder}
+                imageList={imageList}
+              />
+            </div>
+          ))}
+        </div>
       </div>
+
+      {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </div>
   );
 };

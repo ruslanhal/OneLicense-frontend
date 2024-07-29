@@ -1,14 +1,15 @@
 import Project from "@/components/Project/Project";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 import defaultImg from "@/assets/Kaye_0147.png";
 
 import IconAddNew from "@/assets/IconAddNew";
-import {useNavigate} from "react-router-dom";
-import {getAllMyProjects} from "@/apiClient/services/project/project.service";
-import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
+import { useNavigate } from "react-router-dom";
+import { getAllMyProjects } from "@/apiClient/services/project/project.service";
+import { IProjectEntity } from "@/apiClient/services/project/types/project.entities";
 import PurchaseRequest from "@/components/PurchaseRequest/PurchaseRequest";
 import styles from "./HomePage.module.scss";
+import Skeleton from "@/components/Skeleton/Skeleton";
 
 interface Props {}
 
@@ -19,13 +20,22 @@ const HomePage = (props: Props) => {
     imageUrl: defaultImg,
   });
   const [projects, setProjects] = useState<IProjectEntity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   useEffect(() => {
     const fetchAllProjects = async () => {
-      const projects = await getAllMyProjects();
+      setIsLoading(true);
+      try {
+        const projects = await getAllMyProjects();
 
-      setProjects(projects);
-      console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+        setProjects(projects);
+        console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchAllProjects();
   }, []);
@@ -44,18 +54,24 @@ const HomePage = (props: Props) => {
           <IconAddNew />
         </button>
       </div>
-      <div className={'grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}>
+      <div
+        className={
+          "grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+        }
+      >
         {projects &&
           projects.map((project, index) => (
             <Project
-            key={index}
-            id={project.id}
-            title={project.title}
-            author={project.author}
-            imageUrl={project?.images[0].thumbnailUrl}
-          />
+              key={index}
+              id={project.id}
+              title={project.title}
+              author={project.author}
+              imageUrl={project?.images[0].thumbnailUrl}
+            />
           ))}
       </div>
+
+      {isLoading?<Skeleton skeletons={skeletons} />:null}
     </>
   );
 };
