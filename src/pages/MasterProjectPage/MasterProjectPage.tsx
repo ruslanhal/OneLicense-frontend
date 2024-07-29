@@ -10,12 +10,6 @@ import Save from "@/assets/Save";
 import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import {
   generatePresignedUrls,
   uploadImageToS3,
   wrapperUploadImages,
@@ -25,6 +19,7 @@ import CancelIcon from "../../assets/icon_cancel.svg";
 import ImageModal from "@/components/ImageModal/ImageModal";
 import Loader from "@/components/Loader/Loader";
 import Skeleton from "@/components/Skeleton/Skeleton";
+import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 
 type Props = {};
 
@@ -40,7 +35,7 @@ interface Image {
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
-  order:number
+  order: number;
 }
 
 const mockTags = [
@@ -196,14 +191,13 @@ const MasterProjectPage = (props: Props) => {
         const response = await axiosClient.get(`/project/${projectId}`);
         console.log("API response:", response.data);
 
-
-        let index=0;
-        const newArr=response.data.images.map(item=>{
-          index=index+1;
+        let index = 0;
+        const newArr = response.data.images.map((item) => {
+          index = index + 1;
           return {
             ...item,
-            order:index
-          }
+            order: index,
+          };
         });
 
         setImageList(newArr);
@@ -224,9 +218,9 @@ const MasterProjectPage = (props: Props) => {
     return <div>Error: Project is not available</div>;
   }
 
-  useEffect(()=>{
-  console.log(imageList)
-  }, [imageList])
+  useEffect(() => {
+    console.log(imageList);
+  }, [imageList]);
 
   const {
     isLoading,
@@ -330,7 +324,7 @@ const MasterProjectPage = (props: Props) => {
         </div>
       ) : null}
 
-      <ImageCard imageList={imageList}/>
+      <ImageCard imageList={imageList} files={files} uploadProgress={uploadProgress}/>
 
       {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </div>

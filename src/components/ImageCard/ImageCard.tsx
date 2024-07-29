@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
+import ImageUploadCard from "./ImageUploadCard";
 
 interface Image {
   id: string;
@@ -13,20 +14,17 @@ interface Image {
 }
 
 type Props = {
-  title?: string;
-  author?: string;
-  imageUrl?: string;
-  price?: string;
   isSupplier?: boolean;
-  onClick?: () => void;
-  order?: number;
-  setImageList?: (list: Image[]) => void;
   imageList?: Image[];
+  files:File[],
+  uploadProgress:number[]
 };
 
 const ImageCard = ({
   isSupplier,
   imageList=[],
+  files=[],
+  uploadProgress
 }: Props) => {
   const [imageListItems, setImageListItems] = useState<Image[]>([]);
 
@@ -82,9 +80,17 @@ const ImageCard = ({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-[30px]">
+    <div>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full">
+      {files.map((file, index) => (
+          <ImageUploadCard
+            key={index}
+            title={file.name}
+            progress={uploadProgress[index]}
+          />
+        ))}
+
         {imageListItems
           .sort((a, b) => a.order - b.order)
           .map((item) => (
