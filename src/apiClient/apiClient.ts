@@ -68,6 +68,7 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
+    console.log("-==-=-=-=error", error);
     // const isRetr = originalRequest.config._isRetry;
     if (error.response.status === 401 && !originalRequest?.config?._isRetry) {
       console.log("-=-=-=-=-=-=,originalRequest", originalRequest);

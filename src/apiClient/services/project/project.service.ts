@@ -3,10 +3,55 @@ import {ICreateProject, IFileReq} from "./types/project.reqs.types";
 import {IPresignedURL} from "./types/project.entities";
 import axios from "axios";
 
-export const createProject = async (data: ICreateProject) => {
+export const createProject = async () => {
   try {
-    const response = await axiosClient.post("/project", data);
+    const title = "Project Name";
+    const description = "Studio Name";
+    const response = await axiosClient.post("/project", {title, description});
     //  console.log("-=-=-=-=-rsxios createProject", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+};
+
+export const updateProject = async (
+  projectId: string,
+  key: "title" | "description",
+  dataField: string
+) => {
+  try {
+    const payload = {
+      [key]: dataField,
+    };
+    console.log("-=-=-=-=-=payload", payload);
+    if (!dataField.length) return;
+
+    const response = await axiosClient.patch(`/project/${projectId}`, payload);
+    console.log("-=-=-=-=-=-response", response);
+    return response.data;
+  } catch (error: any) {
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+};
+
+export const deleteOneImage = async (projectId: string, imageId: string) => {
+  try {
+    const response = await axiosClient.delete(`/project/image`, {
+      params: {
+        projectId: projectId,
+        imageId: imageId,
+      },
+    });
+    console.log("-=-=-=-=-=-response", response);
     return response.data;
   } catch (error: any) {
     console.log("-=-=-=-=errro", error);

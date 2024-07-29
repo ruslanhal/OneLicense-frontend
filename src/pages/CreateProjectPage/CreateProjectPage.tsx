@@ -28,53 +28,45 @@ const CreateProjectPage = (props: Props) => {
   // const {isSuccess, projectData, error, mutateAsync, mutate} =
   //   createProjectHook(handleSuccess);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const data = await createProject({title, description});
-      console.log("-==-=-=-=-=--response data", data);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const data = await createProject({title, description});
+  //     console.log("-==-=-=-=-=--response data", data);
 
-      navigate(`/master-project/${data.id}`);
-    } catch (error) {
-      console.error("Error creating project:", error);
-    }
-  };
+  //     navigate(`/master-project/${data.id}`);
+  //   } catch (error) {
+  //     console.error("Error creating project:", error);
+  //   }
+  // };
   return (
     <div className="flex flex-col items-center">
-      <form onSubmit={handleSubmit} className="flex flex-col items-center ">
-        <div className="flex flex-col items-center">
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className=" focus:outline-none  text-2xl text-center focus:none appearance-none"
-            placeholder="Title"
-            required
-          />
-        </div>
+      {/* <form onSubmit={handleSubmit} className="flex flex-col items-center "> */}
+      <div className="flex flex-col items-center">
+        <textarea
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className=" focus:outline-none  text-2xl text-center focus:none appearance-none"
+          placeholder="Title"
+          required
+        />
+      </div>
 
-        <div className="flex flex-col items-center mb-4">
-          <input
-            id="description"
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className=" focus:outline-none text-[#888888]   text-center focus:none appearance-none"
-            placeholder="Description"
-            required
-          />
-        </div>
-        <Button text="Create Project" styleType="button_create_dark" />
-      </form>
+      <div className="flex flex-col items-center mb-4">
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className=" focus:outline-none text-[#888888]   text-center focus:none appearance-none"
+          placeholder="Description"
+          required
+        />
+      </div>
+      <Button text="Create Project" styleType="button_create_dark" />
+      {/* </form> */}
     </div>
   );
-  // return (
-  //   <div className="flex flex-col items-center">
-  //     <h1 className="text-2xl">Title</h1>
-  //     <h2 className="text-[#888888]">Description</h2>
-  //   </div>
-  // );
 };
 
 export default CreateProjectPage;

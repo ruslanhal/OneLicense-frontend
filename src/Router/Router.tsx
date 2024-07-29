@@ -19,16 +19,16 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       {path: "", element: <HomePage />},
-      {
-        path: "/create-project",
-        element: (
-          <ProtectedRoute
-            role="creator"
-            redirectPath="/"
-            Component={CreateProjectPage}
-          />
-        ),
-      },
+      // {
+      //   path: "/create-project",
+      //   element: (
+      //     <ProtectedRoute
+      //       role="creator"
+      //       redirectPath="/"
+      //       Component={CreateProjectPage}
+      //     />
+      //   ),
+      // },
       {
         path: "/master-project/:projectId",
         element: (

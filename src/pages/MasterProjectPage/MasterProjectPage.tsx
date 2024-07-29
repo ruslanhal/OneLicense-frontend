@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import imageCompression from "browser-image-compression";
 
@@ -20,7 +20,9 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import {
+  deleteOneImage,
   generatePresignedUrls,
+  updateProject,
   uploadImageToS3,
   wrapperUploadImages,
 } from "@/apiClient/services/project/project.service";
@@ -65,6 +67,9 @@ const mockTags = [
 ];
 
 const MasterProjectPage = (props: Props) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
   const {projectId} = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
@@ -78,6 +83,16 @@ const MasterProjectPage = (props: Props) => {
 
   const [flag, setFlag] = useState(0);
 
+  const titleRef = useRef(null);
+  const descriptionRef = useRef(null);
+
+  // useEffect(() => {
+  //   autoResizeTextarea(titleRef.current);
+  // }, [title]);
+  // useEffect(() => {
+  //   autoResizeTextarea(descriptionRef.current);
+  // }, [description]);
+
   const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fileList = e.target.files;
@@ -88,8 +103,8 @@ const MasterProjectPage = (props: Props) => {
     console.log("-=-=-=-=-=-=-=newFiles", newFiles);
 
     const filesLength = files.length + newFiles.length;
-    if (filesLength > 10) {
-      console.error("You can only upload up to 10 files in total.");
+    if (filesLength > 50) {
+      console.error("You can only upload up to 50 files in total.");
       return;
     }
 
@@ -211,6 +226,13 @@ const MasterProjectPage = (props: Props) => {
     }
   };
 
+  // const autoResizeTextarea = (textarea: HTMLTextAreaElement) => {
+  //   if (textarea) {
+  //     textarea.style.width = "350px";
+  //     // textarea.style.height = `${textarea.scrollHeight}px`;
+  //   }
+  // };
+
   const removeItem = (id: string) => {
     const updatedTagsList = tagsList.filter((tag) => tag.id !== id);
     setTagsList(updatedTagsList);
@@ -265,6 +287,19 @@ const MasterProjectPage = (props: Props) => {
     }
   }, [projectId, flag]);
 
+  const handleUpdateProject = async (
+    key: "title" | "description",
+    dataField: string
+  ) => {
+    try {
+      console.log("-=-=-=-=-=-key, dataField", key, dataField);
+      const data = await updateProject(projectId, key, dataField);
+      console.log("-==-=-=-=-=--response data", data);
+    } catch (error) {
+      console.error("Error uodating project:", error);
+    }
+  };
+
   if (!projectId) {
     return <div>Error: Project is not available</div>;
   }
@@ -275,6 +310,15 @@ const MasterProjectPage = (props: Props) => {
     error,
     isSuccess,
   } = useGetProject(projectId);
+
+  // const [title, setTitle] = useState(projectData.title || "");
+  // const [description, setDescription] = useState(projectData.description || "");
+  useEffect(() => {
+    if (projectData) {
+      setTitle(projectData.title || "");
+      setDescription(projectData.description || "");
+    }
+  }, [projectData]);
 
   if (isTagsOpen) {
     return (
@@ -289,6 +333,12 @@ const MasterProjectPage = (props: Props) => {
     );
   }
 
+  const handleDelete = async (imageId: string) => {
+    await deleteOneImage(projectId, imageId);
+    const newImageList = imageList.filter((image) => image.id !== imageId);
+    setImageList(newImageList);
+  };
+
   const close = () => {
     setOpenedImage("");
   };
@@ -299,11 +349,44 @@ const MasterProjectPage = (props: Props) => {
         <ImageModal url={openedImage} close={() => close()} />
       ) : null}
 
-      <div className="flex flex-col items-center">
+      {/* <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
         <h1 className="focus:outline-none text-[#888888] text-center">
           {projectData?.description}
         </h1>
+      </div> */}
+      <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center">
+          <input
+            id="title"
+            ref={titleRef}
+            value={title}
+            onChange={(e) => {
+              if (title !== e.target.value) {
+                setTitle(e.target.value);
+              }
+            }}
+            className=" w-[500px]  focus:none resize-none focus:outline-none text-2xl text-center appearance-none no-underline "
+            required
+            onBlur={() => handleUpdateProject("title", title)}
+          />
+        </div>
+
+        <div className="flex flex-col items-center mb-4">
+          <input
+            id="description"
+            ref={descriptionRef}
+            value={description}
+            onChange={(e) => {
+              if (description !== e.target.value) {
+                setDescription(e.target.value);
+              }
+            }}
+            className="w-[500px] focus:outline-none text-[#888888]   text-center focus:none appearance-none resize-none no-underline"
+            required
+            onBlur={() => handleUpdateProject("description", description)}
+          />
+        </div>
       </div>
       <div className="flex justify-center items-center gap-2 mt-4 mb-5">
         <button
@@ -400,6 +483,9 @@ const MasterProjectPage = (props: Props) => {
                           author={item.author || "wdeewddwewded"}
                           imageUrl={item.thumbnailUrl || "dcdwe"}
                           onClick={() => openImage(item.originalUrl)}
+                          onDelete={async () => {
+                            handleDelete(item.id);
+                          }}
                         />
                       </div>
                     )}

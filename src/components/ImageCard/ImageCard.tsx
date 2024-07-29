@@ -1,3 +1,4 @@
+import {useState} from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 
@@ -7,20 +8,52 @@ type Props = {
   imageUrl: string;
   price: string;
   isSupplier?: boolean;
-  onClick?:()=>void;
+  onClick?: () => void;
+  onDelete?: () => void;
 };
 
-const ImageCard = ({title, author, imageUrl, price, isSupplier, onClick}: Props) => {
+const ImageCard = ({
+  title,
+  author,
+  imageUrl,
+  price,
+  isSupplier,
+  onClick,
+  onDelete,
+}: Props) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsDeleting(true);
+
+    event.stopPropagation();
+    if (onDelete) {
+      try {
+        onDelete();
+      } catch (error) {
+        console.error("Error deleting image:", error);
+      }
+    }
+  };
+
   return (
-    <div className={styles.container} onClick={onClick}>
+    <div
+      className={`${styles.container} ${isDeleting ? styles.loading : ""}`}
+      onClick={onClick}
+    >
       <div className={styles.deleteIcon}>
-        <DelIcon />
+        <button onClick={handleDeleteClick} disabled={isDeleting}>
+          <DelIcon />
+        </button>
       </div>
 
-      <div className={styles.img}>
-        <img src={imageUrl} />
-      </div>
-
+      {isDeleting ? (
+        <div className="w-[200px] h-[300px]"></div>
+      ) : (
+        <div className={styles.img}>
+          <img src={imageUrl} />
+        </div>
+      )}
       <div className={styles.projectInfo}>
         <p className={styles.title}>{title}</p>
         <p className={styles.span}>{author}</p>
