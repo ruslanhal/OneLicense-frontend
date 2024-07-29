@@ -18,7 +18,7 @@ export const createProjectHook = (onSuccess: (data: IProject) => void) => {
   } = useMutation<IProject, AxiosError, ICreateProject>({
     mutationKey: ["create-project"],
     mutationFn: async (data: ICreateProject) => {
-      const response = await createProject(data);
+      const response = await createProject();
       return response.data;
     },
     onSuccess,
