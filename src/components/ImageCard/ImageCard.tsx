@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 
@@ -13,90 +13,112 @@ interface Image {
 }
 
 type Props = {
-  title: string;
-  author: string;
-  imageUrl: string;
-  price: string;
+  title?: string;
+  author?: string;
+  imageUrl?: string;
+  price?: string;
   isSupplier?: boolean;
   onClick?: () => void;
-  order: number;
-  setImageList: (list: Image[]) => void;
-  imageList: Image[];
+  order?: number;
+  setImageList?: (list: Image[]) => void;
+  imageList?: Image[];
 };
 
 const ImageCard = ({
-  title,
-  author,
-  imageUrl,
-  price,
   isSupplier,
-  onClick,
-  order,
-  imageList,
-  setImageList,
+  imageList=[],
 }: Props) => {
-  const [currentCardOrder, setCurrentCardOrder] = useState<number | null>(null);
+  const [imageListItems, setImageListItems] = useState<Image[]>([]);
 
-  const dragStartHandler = (e: React.DragEvent<HTMLDivElement>, cardOrder: number) => {
-    console.log("Dragging card with order:", cardOrder);
-    setCurrentCardOrder(cardOrder);
-  };
+  const [currentCard, setCurrentCard] = useState<{
+    id: string;
+    order: number;
+  } | null>(null);
 
-  const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    if (imageList.length > 0) {
+      setImageListItems(imageList);
+    }
+  }, [imageList]);
+
+  function dragStartHandler(
+    e: React.DragEvent<HTMLDivElement>,
+    item: { id: string; order: number }
+  ) {
+  //  console.log("drag", item);
+    setCurrentCard(item);
+  }
+
+  function dragEndHandler(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-  };
+  }
 
-  const dragOverHandler = (e: React.DragEvent<HTMLDivElement>) => {
+  function dragOverHandler(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-  };
+  }
 
-  const dropHandler = (e: React.DragEvent<HTMLDivElement>, targetCardOrder: number) => {
+  function dropHandler(
+    e: React.DragEvent<HTMLDivElement>,
+    item: { id: string; order: number }
+  ) {
     e.preventDefault();
-    if (currentCardOrder === null) return;
+    if (currentCard === null) return;
 
-    const newList = imageList.map((card) => {
-      if (card.order === targetCardOrder) {
-        return { ...card, order: currentCardOrder };
-      }
-      if (card.order === currentCardOrder) {
-        return { ...card, order: targetCardOrder };
-      }
-      return card;
-    });
+    setImageListItems(
+      imageListItems.map((c) => {
+        if (c.id === item.id) {
+          return {
+            ...c,
+            order: currentCard.order,
+          };
+        }
 
-    console.log(newList);
-
-    setImageList(newList);
-    setCurrentCardOrder(null); 
-  };
+        if (c.id === currentCard.id) {
+          return { ...c, order: item.order };
+        }
+        return c;
+      })
+    );
+  }
 
   return (
-    <div
-      draggable={true}
-      onDragStart={(e) => dragStartHandler(e, order)}
-      onDragLeave={dragEndHandler}
-      onDragEnd={dragEndHandler}
-      onDragOver={dragOverHandler}
-      onDrop={(e) => dropHandler(e, order)}
-      className={styles.container}
-      onClick={onClick}
-    >
-      <div className={styles.deleteIcon}>
-        <DelIcon />
-      </div>
+    <div className="flex flex-wrap items-center justify-between gap-[30px]">
 
-      <div className={styles.img}>
-        <img src={imageUrl} alt={title} />
-      </div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full">
+        {imageListItems
+          .sort((a, b) => a.order - b.order)
+          .map((item) => (
+            <div
+              draggable={true}
+              className={styles.container}
+              onDragStart={(e) => dragStartHandler(e, item)}
+              onDragLeave={(e) => dragEndHandler(e)}
+              onDragEnd={(e) => dragEndHandler(e)}
+              onDragOver={(e) => dragOverHandler(e)}
+              onDrop={(e) => dropHandler(e, item)}
+              key={item.id}
+            >
+              <div className={styles.deleteIcon}>
+                <DelIcon />
+              </div>
 
-      <div className={styles.projectInfo}>
-        <p className={styles.title}>{title}</p>
-        <p className={styles.span}>{author}</p>
-      </div>
+              <div className={styles.img}>
+                <img src={item.thumbnailUrl} alt={item.title} />
+              </div>
 
-      <div className={styles.buttons}>
-        <button className={styles.button}>{price}</button>
-        {isSupplier && <button className={styles.button}>Add to cart</button>}
+              <div className={styles.projectInfo}>
+                <p className={styles.title}>{item.title}</p>
+                <p className={styles.span}>{item.author}</p>
+              </div>
+
+              <div className={styles.buttons}>
+                <button className={styles.button}>{item.price}</button>
+                {isSupplier && (
+                  <button className={styles.button}>Add to cart</button>
+                )}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

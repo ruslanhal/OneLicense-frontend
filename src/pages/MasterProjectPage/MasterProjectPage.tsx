@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import imageCompression from "browser-image-compression";
-
-import iconSave from "@/assets/icon_save.svg";
-import Project from "@/components/Project/Project";
 import { useGetProject } from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
@@ -12,7 +9,6 @@ import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
 import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
-import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 import {
   DragDropContext,
   Droppable,
@@ -184,10 +180,6 @@ const MasterProjectPage = (props: Props) => {
     setTagsList(updatedTagsList);
   };
 
-  const handleAddImagesOrder=(list:Image[])=>{
-    setImageList(list);
-  }
-
   const addItem = (name: string) => {
     const id = Date.now().toString();
     const newTag = { id: id, name: name };
@@ -196,21 +188,6 @@ const MasterProjectPage = (props: Props) => {
 
   const closeForm = (value: boolean) => {
     setIsTagsOpen(value);
-  };
-
-  const handleOnDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const updatedItems = Array.from(imageList);
-    const [reorderedItem] = updatedItems.splice(result.source.index, 1);
-    updatedItems.splice(result.destination.index, 0, reorderedItem);
-
-    setImageList(updatedItems);
-  };
-
-  const openImage = (value: string) => {
-    setOpenedImage(value);
-    console.log(value);
   };
 
   useEffect(() => {
@@ -353,37 +330,7 @@ const MasterProjectPage = (props: Props) => {
         </div>
       ) : null}
 
-      <div
-        className={`${
-          imageList && imageList.length >= 4
-            ? "flex justify-center"
-            : "flex justify-center"
-        }`}
-      >
-        {files.map((file, index) => (
-          <ImageUploadCard
-            key={index}
-            title={file.name}
-            progress={uploadProgress[index]}
-          />
-        ))}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full">
-          {imageList.sort((a, b) => a.order - b.order).map((item) => (
-            <div key={item.id} className="image-card">
-              <ImageCard
-                title={item.title || "vfrrvvrf"}
-                price={item.price || "$15"}
-                author={item.author || "wdeewddwewded"}
-                imageUrl={item.thumbnailUrl || "dcdwe"}
-                onClick={() => openImage(item.originalUrl)}
-                order={item.order}
-                setImageList={handleAddImagesOrder}
-                imageList={imageList}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <ImageCard imageList={imageList}/>
 
       {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </div>
