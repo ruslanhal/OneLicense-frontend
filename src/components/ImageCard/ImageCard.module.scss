@@ -14,6 +14,7 @@
   padding-top: 40px;
   background-color: white;
   cursor: grab;
+  transition: 0.6s;
 
   &:hover {
     background-color: #fafafa;
@@ -70,5 +71,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
   }
+}
+
+.container:active {
+  opacity: 1 !important;
+}
+
+.draggedOver {
+  opacity: 0;
+  transform: translateX(100px);
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.dragging {
+  opacity: 1 !important;
+  transform: scale(1.05);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }

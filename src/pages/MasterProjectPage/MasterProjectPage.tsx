@@ -16,10 +16,8 @@ import {
 } from "@/apiClient/services/project/project.service";
 import { IPresignedURL } from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg";
-import ImageModal from "@/components/ImageModal/ImageModal";
 import Loader from "@/components/Loader/Loader";
 import Skeleton from "@/components/Skeleton/Skeleton";
-import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
 
 type Props = {};
 
@@ -64,8 +62,6 @@ const MasterProjectPage = (props: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
   const [imageList, setImageList] = useState<Image[]>([]);
-
-  const [openedImage, setOpenedImage] = useState<string>("");
   const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
@@ -243,15 +239,9 @@ const MasterProjectPage = (props: Props) => {
     );
   }
 
-  const close = () => {
-    setOpenedImage("");
-  };
 
   return (
     <div className={styles.master_project__container}>
-      {openedImage !== "" ? (
-        <ImageModal url={openedImage} close={() => close()} />
-      ) : null}
 
       <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
