@@ -4,7 +4,7 @@ import DelIcon from "@/assets/DelIcon";
 import ImageUploadCard from "./ImageUploadCard";
 import ImageModal from "../ImageModal/ImageModal";
 import {deleteOneImage} from "@/apiClient/services/project/project.service";
-import ImgCard from "./ImgCrd";
+import ImgCard from "./ImageCard";
 
 interface Image {
   id: string;
