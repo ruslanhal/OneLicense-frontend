@@ -13,12 +13,7 @@ export default function ImageModal({url, close}: ImageModalProps) {
       onClick={close}
     >
       <div className="relative max-w-full max-h-full p-4">
-        <button
-          onClick={close}
-          className="absolute top-2 right-2 bg-transparent border-none cursor-pointer"
-        >
-          <img src={Cancel} alt="Cancel" />
-        </button>
+        
         <img
           src={url}
           alt="Modal content"

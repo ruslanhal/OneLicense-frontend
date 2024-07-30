@@ -12,13 +12,6 @@ import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
 import {axiosClient} from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCard";
-import ImageUploadCard from "@/components/ImageCard/ImageUploadCard";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
 import {
   deleteOneImage,
   generatePresignedUrls,
@@ -28,7 +21,6 @@ import {
 } from "@/apiClient/services/project/project.service";
 import {IPresignedURL} from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg";
-import ImageModal from "@/components/ImageModal/ImageModal";
 import Loader from "@/components/Loader/Loader";
 import Skeleton from "@/components/Skeleton/Skeleton";
 
@@ -78,8 +70,6 @@ const MasterProjectPage = (props: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
   const [imageList, setImageList] = useState<Image[]>([]);
-
-  const [openedImage, setOpenedImage] = useState<string>("");
   const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
@@ -206,9 +196,9 @@ const MasterProjectPage = (props: Props) => {
     setTagsList(updatedTagsList);
   };
 
-  const handleAddImagesOrder = (list: Image[]) => {
-    setImageList(list);
-  };
+  // const handleAddImagesOrder = (list: Image[]) => {
+  //   setImageList(list);
+  // };
 
   const addItem = (name: string) => {
     const id = Date.now().toString();
@@ -220,20 +210,20 @@ const MasterProjectPage = (props: Props) => {
     setIsTagsOpen(value);
   };
 
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
+  // const onDragEnd = (result) => {
+  //   if (!result.destination) return;
 
-    const updatedItems = Array.from(imageList);
-    const [reorderedItem] = updatedItems.splice(result.source.index, 1);
-    updatedItems.splice(result.destination.index, 0, reorderedItem);
+  //   const updatedItems = Array.from(imageList);
+  //   const [reorderedItem] = updatedItems.splice(result.source.index, 1);
+  //   updatedItems.splice(result.destination.index, 0, reorderedItem);
 
-    setImageList(updatedItems);
-  };
+  //   setImageList(updatedItems);
+  // };
 
-  const openImage = (value: string) => {
-    setOpenedImage(value);
-    console.log(value);
-  };
+  // const openImage = (value: string) => {
+  //   setOpenedImage(value);
+  //   console.log(value);
+  // };
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -321,16 +311,12 @@ const MasterProjectPage = (props: Props) => {
     setImageList(newImageList);
   };
 
-  const close = () => {
-    setOpenedImage("");
-  };
+  // const close = () => {
+  //   setOpenedImage("");
+  // };
 
   return (
     <div className={styles.master_project__container}>
-      {openedImage !== "" ? (
-        <ImageModal url={openedImage} close={() => close()} />
-      ) : null}
-
       {/* <div className="flex flex-col items-center">
         <h1 className="text-2xl text-center">{projectData?.title}</h1>
         {isLoading ? <div className=""></div> : null}
@@ -371,10 +357,10 @@ const MasterProjectPage = (props: Props) => {
           />
         </div>
         {isLoading ? (
-          <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px]"></div>
+          <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px] animate-blinkTitle"></div>
         ) : null}
         {isLoading ? (
-          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md"></div>
+          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md animate-blinkSpan"></div>
         ) : null}
       </div>
       <div className="flex justify-center items-center gap-2 mt-4 mb-5">
@@ -435,57 +421,11 @@ const MasterProjectPage = (props: Props) => {
         </div>
       ) : null}
 
-      <div
-        className={`${
-          imageList && imageList.length >= 4
-            ? "flex justify-center"
-            : "flex justify-center"
-        }`}
-      >
-        {files.map((file, index) => (
-          <ImageUploadCard
-            key={index}
-            title={file.name}
-            progress={uploadProgress[index]}
-          />
-        ))}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable" direction="both">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full"
-              >
-                {imageList.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className="image-card"
-                      >
-                        <ImageCard
-                          title={item.title || "vfrrvvrf"}
-                          price={item.price || "$15"}
-                          author={item.author || "wdeewddwewded"}
-                          imageUrl={item.thumbnailUrl || "dcdwe"}
-                          onClick={() => openImage(item.originalUrl)}
-                          onDelete={async () => {
-                            handleDelete(item.id);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </div>
+      <ImageCard
+        imageList={imageList}
+        files={files}
+        uploadProgress={uploadProgress}
+      />
 
       {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </div>
