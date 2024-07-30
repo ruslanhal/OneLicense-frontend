@@ -250,10 +250,10 @@ const MasterProjectPage = (props: Props) => {
           {projectData?.description}
         </h1>
         {isLoading ? (
-          <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px]"></div>
+          <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px] animate-blinkTitle"></div>
         ) : null}
         {isLoading ? (
-          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md"></div>
+          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md animate-blinkSpan"></div>
         ) : null}
       </div>
       <div className="flex justify-center items-center gap-2 mt-4 mb-5">
