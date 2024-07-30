@@ -38,7 +38,7 @@ interface Image {
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
-  order: number;
+  orderIndex: number;
 }
 
 const mockTags = [
@@ -236,7 +236,7 @@ const MasterProjectPage = (props: Props) => {
           index = index + 1;
           return {
             ...item,
-            order: index,
+            orderIndex: index,
           };
         });
 
@@ -425,6 +425,8 @@ const MasterProjectPage = (props: Props) => {
         imageList={imageList}
         files={files}
         uploadProgress={uploadProgress}
+        projectId={projectId}
+        handleDelete={handleDelete}
       />
 
       {isLoading ? <Skeleton skeletons={skeletons} /> : null}
