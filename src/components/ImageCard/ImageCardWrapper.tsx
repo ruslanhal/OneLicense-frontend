@@ -3,7 +3,10 @@ import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 import ImageUploadCard from "./ImageUploadCard";
 import ImageModal from "../ImageModal/ImageModal";
-import {deleteOneImage} from "@/apiClient/services/project/project.service";
+import {
+  deleteOneImage,
+  resortImages,
+} from "@/apiClient/services/project/project.service";
 import ImgCard from "./ImageCard";
 
 interface Image {
@@ -34,10 +37,23 @@ const ImageCardWraper = ({
   handleDelete,
 }: Props) => {
   const [imageListItems, setImageListItems] = useState<Image[]>([]);
+  const [resortedImages, setresortedImages] = useState<
+    | {
+        imageId: string;
+        orderIndex: number;
+      }[]
+    | null
+  >(null);
   const [currentCard, setCurrentCard] = useState<Image | null>(null);
   const [draggedOverItem, setDraggedOverItem] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [openedImage, setOpenedImage] = useState<string>("");
+
+  useEffect(() => {
+    return () => {
+      resortImages(projectId, resortedImages);
+    };
+  }, [resortedImages]);
 
   useEffect(() => {
     if (imageList.length > 0) {
@@ -68,6 +84,7 @@ const ImageCardWraper = ({
     e.preventDefault();
     if (currentCard === null) return;
 
+    imageListItems.sort((a, b) => a.orderIndex - b.orderIndex);
     const newList = [...imageListItems];
     const dragIndex = newList.findIndex((c) => c.id === currentCard.id);
     const hoverIndex = newList.findIndex((c) => c.id === item.id);
@@ -79,7 +96,12 @@ const ImageCardWraper = ({
       ...img,
       orderIndex: index,
     }));
+    updatedList.sort((a, b) => b.orderIndex - a.orderIndex);
 
+    const paramsResorted = updatedList.map((image) => {
+      return {imageId: image.id, orderIndex: image.orderIndex};
+    });
+    setresortedImages(paramsResorted);
     setImageListItems(updatedList);
     setCurrentCard(null);
     setDraggedOverItem(null);
@@ -89,12 +111,6 @@ const ImageCardWraper = ({
   const close = () => {
     setOpenedImage("");
   };
-
-  // const handleDelete = async (imageId: string) => {
-  //   await deleteOneImage(projectId, imageId);
-  //   const newImageList = imageList.filter((image) => image.id !== imageId);
-  //   setImageListItems(newImageList);
-  // };
 
   return (
     <div>
@@ -111,7 +127,7 @@ const ImageCardWraper = ({
         ))}
 
         {imageListItems
-          // .sort((a, b) => a.orderIndex - b.orderIndex)
+          // .sort((a, b) => b.orderIndex - a.orderIndex)
           .map((item) => (
             <ImgCard
               key={item.id}
@@ -135,105 +151,3 @@ const ImageCardWraper = ({
 };
 
 export default ImageCardWraper;
-
-{
-  /* type Props = {
-  isSupplier?: boolean;
-  onClick?: () => void;
-  onDelete?: () => void;
-  imageList?: Image[];
-  files: File[];
-  uploadProgress: number[];
-};
-
-const ImageCard = ({
-  isSupplier,
-<<<<<<< HEAD
-  onClick,
-  onDelete,
-}: Props) => {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setIsDeleting(true);
-
-    event.stopPropagation();
-    if (onDelete) {
-      try {
-        onDelete();
-      } catch (error) {
-        console.error("Error deleting image:", error);
-      }
-    }
-  };
-
-  return (
-    <div
-      className={`${styles.container} ${isDeleting ? styles.loading : ""}`}
-      onClick={onClick}
-    >
-      <div className={styles.deleteIcon}>
-        <button onClick={handleDeleteClick} disabled={isDeleting}>
-          <DelIcon />
-        </button>
-      </div>
-
-      {isDeleting ? (
-        <div className="w-[200px] h-[300px]"></div>
-      ) : (
-        <div className={styles.img}>
-          <img src={imageUrl} />
-        </div>
-      )}
-      <div className={styles.projectInfo}>
-        <p className={styles.title}>{title}</p>
-        <p className={styles.span}>{author}</p>
-      </div> */
-}
-
-// {imageListItems
-//   .sort((a, b) => a.orderIndex - b.orderIndex)
-//   .map((item) => (
-//     <div
-//       draggable={true}
-//       onClick={() => setOpenedImage(item.originalUrl)}
-//       className={`${styles.container} ${
-//         draggedOverItem === item.id ? styles.draggedOver : ""
-//       } ${isDeleting ? styles.loading : ""}`}
-//       onDragStart={(e) => dragStartHandler(e, item)}
-//       onDragLeave={(e) => dragEndHandler(e)}
-//       onDragEnd={(e) => dragEndHandler(e)}
-//       onDragOver={(e) => dragOverHandler(e, item)}
-//       onDrop={(e) => dropHandler(e, item)}
-//       key={item.id}
-//       style={{
-//         opacity:
-//           isDragging && currentCard?.id === item.id ? 1 : undefined,
-//       }}
-//     >
-//       <div className={styles.deleteIcon}>
-//         <button
-//           onClick={handleDeleteClick(item.id)}
-//           disabled={isDeleting}
-//         >
-//           <DelIcon />
-//         </button>
-//       </div>
-
-//       <div className={styles.img}>
-//         <img src={item.thumbnailUrl} alt={item.title} />
-//       </div>
-
-//       <div className={styles.projectInfo}>
-//         <p className={styles.title}>{item.title}</p>
-//         <p className={styles.span}>{item.author}</p>
-//       </div>
-
-//       <div className={styles.buttons}>
-//         <button className={styles.button}>{item.price}</button>
-//         {isSupplier && (
-//           <button className={styles.button}>Add to cart</button>
-//         )}
-//       </div>
-//     </div>
-//   ))}

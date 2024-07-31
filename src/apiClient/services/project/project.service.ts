@@ -147,3 +147,24 @@ export const uploadImageToS3 = async ({
     },
   });
 };
+
+export const resortImages = async (
+  projectId: string,
+  data: {imageId: string; orderIndex: number}[]
+) => {
+  try {
+    if (!data || !data?.length) return;
+    console.log("-=-=-=-=-data", data);
+    const response = await axiosClient.patch(
+      `/project/resort-images/${projectId}`,
+      {imageOrderArr: data}
+    );
+    console.log("-=-=-=-=-response", response);
+  } catch (error) {
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+};

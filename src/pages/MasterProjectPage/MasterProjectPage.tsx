@@ -233,16 +233,14 @@ const MasterProjectPage = (props: Props) => {
 
         let index = 0;
         const newArr = response.data.images.map((item) => {
-          index = index + 1;
+          // index = index + 1;
           return {
             ...item,
-            orderIndex: index,
+            // orderIndex: index,
           };
         });
-
-        setImageList(newArr);
-
-        console.log("-=-=-=-=imageList", imageList);
+        // .sort((a, b) => b.orderIndex - a.orderIndex)
+        setImageList(newArr.sort((a, b) => b.orderIndex - a.orderIndex));
       } catch (error) {
         console.error("Error fetching files:", error);
       }
@@ -259,9 +257,7 @@ const MasterProjectPage = (props: Props) => {
     dataField: string
   ) => {
     try {
-      console.log("-=-=-=-=-=-key, dataField", key, dataField);
       const data = await updateProject(projectId, key, dataField);
-      console.log("-==-=-=-=-=--response data", data);
     } catch (error) {
       console.error("Error uodating project:", error);
     }
@@ -282,8 +278,6 @@ const MasterProjectPage = (props: Props) => {
     isSuccess,
   } = useGetProject(projectId);
 
-  // const [title, setTitle] = useState(projectData.title || "");
-  // const [description, setDescription] = useState(projectData.description || "");
   useEffect(() => {
     if (projectData) {
       setTitle(projectData.title || "");
@@ -311,19 +305,8 @@ const MasterProjectPage = (props: Props) => {
     setImageList(newImageList);
   };
 
-  // const close = () => {
-  //   setOpenedImage("");
-  // };
-
   return (
     <div className={styles.master_project__container}>
-      {/* <div className="flex flex-col items-center">
-        <h1 className="text-2xl text-center">{projectData?.title}</h1>
-        {isLoading ? <div className=""></div> : null}
-        <h1 className="focus:outline-none text-[#888888] text-center">
-          {projectData?.description}
-        </h1>
-      </div> */}
       <div className="flex flex-col items-center">
         <div className="flex flex-col items-center">
           <input
