@@ -3,12 +3,13 @@ import styles from "./Button.module.scss";
 type Props = {
   text: string;
   styleType: string;
+  width?:string;
   onClick?: () => void;
 };
 
-const Button = ({text, styleType, onClick}: Props) => {
+const Button = ({text, styleType, onClick, width}: Props) => {
   return (
-    <button type="submit" className={styles[styleType]} onClick={onClick}>
+    <button style={{width:width}} type="submit" className={styles[styleType]} onClick={onClick}>
       {text}
     </button>
   );
