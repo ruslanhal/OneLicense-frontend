@@ -11,7 +11,7 @@ import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
 import {axiosClient} from "@/apiClient/apiClient";
-import ImageCard from "@/components/ImageCard/ImageCard";
+import ImageCard from "@/components/ImageCard/ImageCardWrapper";
 import {
   deleteOneImage,
   generatePresignedUrls,
