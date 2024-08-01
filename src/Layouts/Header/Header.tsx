@@ -11,6 +11,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {IUser} from "@/common/types/user.types";
 import styles from './Header.module.scss'
 import { Link } from "react-router-dom";
+import BasketSidebar from "../BasketSidebar/BasketSidebar";
 
 interface HeaderProps{
   isSupplier?:boolean;
@@ -23,9 +24,15 @@ const Header = ({isSupplier}:HeaderProps) => {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData<IUser>(["profile"]);
  // console.log("-=-=-=-=-=user in header", user);
+ const [isSideBarOpened, setIsSideBarOpened]=useState(false);
+
+ const handleOpenSideBar=(value:boolean)=>{
+  setIsSideBarOpened(value);
+ }
 
   return (
     <header>
+      {isSideBarOpened?<BasketSidebar close={handleOpenSideBar}/>:null}
       <div className="mb-16">
         <div className="flex justify-center items-center mt-[70px] mb-[34px] ">
           <img src={Logo} />
@@ -39,8 +46,8 @@ const Header = ({isSupplier}:HeaderProps) => {
             className={styles.input}
           ></input>
 
-          {isSupplier?<Basket />:<Notification />}
-
+        {isSupplier?<div onClick={()=>setIsSideBarOpened(true)}><Basket /></div>:<Notification />}
+        
           {/* <div>
             <span className="underline cursor-pointer">
               {user?.role === "creator"
