@@ -47,7 +47,7 @@ export default function ProfilePage() {
         <LogOut onClick={handleLogout} />
       </div>
 
-      <div className={styles.contentContainer}>
+      <div className={styles.contentContainer} style={user?.role==="supplier"?{width:'50%'}:{}}>
         <div className={styles.contentItem}>
           <div className={styles.contentItemTitle}>Change Password</div>
 
@@ -72,7 +72,7 @@ export default function ProfilePage() {
           <div className={styles.forgotPassword}>Forgot my password?</div>
         </div>
 
-        <div className={styles.contentItemTwo}>
+        {user?.role==="creator"?<div className={styles.contentItemTwo}>
           <div className={styles.contentItem}>
             <div className={styles.contentItemTitle}>Price Per Image</div>
             <div className={styles.priceContainer}>
@@ -109,7 +109,7 @@ export default function ProfilePage() {
             <div className={styles.contentItemTitle}>Total Sales</div>
             <div className={styles.totalSalesPrice}>$75.00 AUD</div>
           </div>
-        </div>
+        </div>:null}
 
         <div className={styles.contentItem}>
           <div className={styles.contentItemTitle}>Delete Account</div>
