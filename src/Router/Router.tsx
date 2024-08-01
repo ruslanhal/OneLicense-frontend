@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
         path: "/profile",
         element: (
           <ProtectedRoute
-            role="creator"
+            role="both"
             redirectPath="/"
             Component={ProfilePage}
           />
