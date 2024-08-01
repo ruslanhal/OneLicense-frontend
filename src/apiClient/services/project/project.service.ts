@@ -62,6 +62,22 @@ export const deleteOneImage = async (projectId: string, imageId: string) => {
   }
 };
 
+export const deleteProject = async (projectId: string) => {
+  try {
+    const response = await axiosClient.delete(
+      `/project/delete-project/${projectId}`
+    );
+    console.log("-=-=-=-=-=-response", response);
+    return response.data;
+  } catch (error: any) {
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+};
+
 export const getProject = async (id: string) => {
   try {
     const response = await axiosClient.get(`/project/${id}`);

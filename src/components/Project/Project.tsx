@@ -8,10 +8,31 @@ type Props = {
   title: string;
   author: string;
   imageUrl: string | undefined;
+  onDelete: () => Promise<void>;
 };
 
-const Project = ({id, title, author, imageUrl}: Props) => {
+const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDeleting(true);
+
+    if (onDelete) {
+      try {
+        await onDelete();
+        setIsDeleting(false);
+      } catch (error) {
+        setIsDeleting(false);
+        console.error("Error deleting image:", error);
+      }
+    }
+  };
 
   console.log("-=-=-=-=-=id of project", id);
   return (
@@ -25,12 +46,19 @@ const Project = ({id, title, author, imageUrl}: Props) => {
         </div>
       </div> */}
       <Link to={`master-project/${id}`}>
-        <div className={styles.container}>
+        <div
+          className={`${styles.container} ${isDeleting ? styles.deleting : ""}`}
+        >
           <div className={styles.img}>
             <img src={imageUrl} />
           </div>
 
-          <button className={styles.deleteIcon}>
+          {/* <button className={styles.deleteIcon}> */}
+          <button
+            className={styles.deleteIcon}
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+          >
             <DelIcon />
           </button>
 

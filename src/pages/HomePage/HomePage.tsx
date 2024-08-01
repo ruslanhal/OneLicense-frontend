@@ -7,6 +7,7 @@ import IconAddNew from "@/assets/IconAddNew";
 import {useNavigate} from "react-router-dom";
 import {
   createProject,
+  deleteProject,
   getAllMyProjects,
 } from "@/apiClient/services/project/project.service";
 import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
@@ -51,6 +52,15 @@ const HomePage = (props: Props) => {
     }
   };
 
+  const handleDelete = async (projectId: string) => {
+    try {
+      console.log("=-=-=-=-=-=-in delete proj");
+      await deleteProject(projectId);
+      const newProjects = projects.filter((proj) => proj.id !== projectId);
+      setProjects(newProjects);
+    } catch (error) {}
+  };
+
   return (
     <>
       <div className="flex justify-center items-center  mb-16">
@@ -74,6 +84,9 @@ const HomePage = (props: Props) => {
               title={project.title}
               author={project.author}
               imageUrl={project?.images[0].thumbnailUrl}
+              onDelete={async () => {
+                handleDelete(project.id);
+              }}
             />
           ))}
       </div>

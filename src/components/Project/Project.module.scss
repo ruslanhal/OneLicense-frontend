@@ -1,5 +1,5 @@
 .container {
-    display: flex;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -13,36 +13,42 @@
   padding-bottom: 20px;
   padding-top: 40px;
 
-    &:hover{
-        background-color: #FAFAFA;
-    }
+  &:hover {
+    background-color: #fafafa;
+  }
 
-    .projectInfo{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
-    }
+  .projectInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
 
-    .title{
-        color:#444444;
-        font-size: 11px;
-    }
-    .span{
-        font-size: 11px;
-        color:#888888;
-    }
-    .img {
-        margin-top: 4 0px;
-        width: 240px;
-        height: 368px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .deleteIcon {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-      }
+  .title {
+    color: #444444;
+    font-size: 11px;
+  }
+  .span {
+    font-size: 11px;
+    color: #888888;
+  }
+  .img {
+    margin-top: 4 0px;
+    width: 240px;
+    height: 368px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .deleteIcon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+  }
+}
+.deleting {
+  background-color: rgba(212, 212, 212, 0.878);
+  z-index: 1000;
+  pointer-events: none;
 }
