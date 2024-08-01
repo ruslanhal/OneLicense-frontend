@@ -16,17 +16,17 @@ type Props = {
 const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string>("");
 
   const handleDelete = async () => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     setConfirmDeletionModal(false);
 
     if (onDelete) {
       try {
         await onDelete();
       } catch (error) {
-        setIsDeleting(false);
+        setIsDeleting("");
         console.error("Error deleting image:", error);
       }
     }
@@ -77,9 +77,11 @@ const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
           </div>
         </div>
       )}
+
+      
       <Link to={`master-project/${id}`}>
         <div
-          className={`${styles.container} ${isDeleting ? styles.deleting : ""}`}
+          className={`${styles.container} ${isDeleting===id ? styles.deleting : ""}`}
         >
           <div className={styles.img}>
             <img src={imageUrl} alt={title} />
