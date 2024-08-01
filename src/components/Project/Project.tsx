@@ -26,7 +26,7 @@ const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
     if (onDelete) {
       try {
         await onDelete();
-        setIsDeleting(false);
+        // setIsDeleting(false);
       } catch (error) {
         setIsDeleting(false);
         console.error("Error deleting image:", error);
