@@ -23,8 +23,12 @@ import {IPresignedURL} from "@/apiClient/services/project/types/project.entities
 import CancelIcon from "../../assets/icon_cancel.svg";
 import Loader from "@/components/Loader/Loader";
 import Skeleton from "@/components/Skeleton/Skeleton";
-
-type Props = {};
+import {ITag} from "@/apiClient/services/tags/types/tag.entities";
+import {useGetTAGSofProject} from "@/apiClient/services/tags/tag.hooks";
+import {
+  addTagToProject,
+  removeTAGfromProject,
+} from "@/apiClient/services/tags/tag.service";
 
 interface Tag {
   id: string;
@@ -41,26 +45,7 @@ interface Image {
   orderIndex: number;
 }
 
-const mockTags = [
-  {
-    id: "1",
-    name: "Signorino",
-  },
-  {
-    id: "2",
-    name: "Inlite",
-  },
-  {
-    id: "3",
-    name: "Made By Storey",
-  },
-  {
-    id: "4",
-    name: "Brodware",
-  },
-];
-
-const MasterProjectPage = (props: Props) => {
+const MasterProjectPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -68,7 +53,7 @@ const MasterProjectPage = (props: Props) => {
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [tagsList, setTagsList] = useState<Tag[]>(mockTags);
+  const [tagsList, setTagsList] = useState<ITag[]>([]);
   const [imageList, setImageList] = useState<Image[]>([]);
   const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
@@ -78,13 +63,6 @@ const MasterProjectPage = (props: Props) => {
 
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
-
-  // useEffect(() => {
-  //   autoResizeTextarea(titleRef.current);
-  // }, [title]);
-  // useEffect(() => {
-  //   autoResizeTextarea(descriptionRef.current);
-  // }, [description]);
 
   const handleDragAndDrop = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -177,53 +155,38 @@ const MasterProjectPage = (props: Props) => {
 
       setFiles([]);
       setFlag(1);
-
-      console.log("-=-=-=-=-=-=-presignedUrlArr:", presignedUrlArr);
     } catch (e) {
       console.error("Error uploading files:", e);
     }
   };
 
-  // const autoResizeTextarea = (textarea: HTMLTextAreaElement) => {
-  //   if (textarea) {
-  //     textarea.style.width = "350px";
-  //     // textarea.style.height = `${textarea.scrollHeight}px`;
-  //   }
-  // };
+  const {
+    data: tagsArr,
+    error: tagsError,
+    isLoading: tagsIsloading,
+  } = useGetTAGSofProject(projectId);
 
-  const removeItem = (id: string) => {
-    const updatedTagsList = tagsList.filter((tag) => tag.id !== id);
-    setTagsList(updatedTagsList);
+  console.log("-=-=-=-=-=TAGS ARR", tagsArr);
+  useEffect(() => {
+    setTagsList(tagsArr);
+  }, [tagsArr]);
+
+  const handleaddTagToProject = async (tagTitle: "title") => {
+    const addTagResponse = await addTagToProject("title", tagTitle, projectId);
+    console.log("-=-=-=-=-=-new asigned tag in master project", addTagResponse);
+    const newTag = {id: addTagResponse.tagId, title: tagTitle};
+    setTagsList([...tagsList, newTag]);
   };
 
-  // const handleAddImagesOrder = (list: Image[]) => {
-  //   setImageList(list);
-  // };
-
-  const addItem = (name: string) => {
-    const id = Date.now().toString();
-    const newTag = {id: id, name: name};
-    setTagsList([...tagsList, newTag]);
+  const handleRemoveTAGfromProject = async (tagId: string) => {
+    const data = await removeTAGfromProject(tagId, projectId);
+    const updatedTagsList = tagsList.filter((tag) => tag.id !== tagId);
+    setTagsList(updatedTagsList);
   };
 
   const closeForm = (value: boolean) => {
     setIsTagsOpen(value);
   };
-
-  // const onDragEnd = (result) => {
-  //   if (!result.destination) return;
-
-  //   const updatedItems = Array.from(imageList);
-  //   const [reorderedItem] = updatedItems.splice(result.source.index, 1);
-  //   updatedItems.splice(result.destination.index, 0, reorderedItem);
-
-  //   setImageList(updatedItems);
-  // };
-
-  // const openImage = (value: string) => {
-  //   setOpenedImage(value);
-  //   console.log(value);
-  // };
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -291,9 +254,9 @@ const MasterProjectPage = (props: Props) => {
         {isLoading ? <Loader /> : null}
         <TagsForm
           closeForm={closeForm}
-          addItem={addItem}
+          addTag={handleaddTagToProject}
+          removeTag={handleRemoveTAGfromProject}
           tagsList={tagsList}
-          removeItem={removeItem}
         />
       </div>
     );

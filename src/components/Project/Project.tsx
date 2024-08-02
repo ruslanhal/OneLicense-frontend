@@ -8,12 +8,12 @@ import Button from "../Button/Button";
 type Props = {
   id: string;
   title: string;
-  author: string;
+  description: string;
   imageUrl: string | undefined;
   onDelete: () => Promise<void>;
 };
 
-const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
+const Project = ({id, title, description, imageUrl, onDelete}: Props) => {
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState<string>("");
@@ -78,10 +78,11 @@ const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
         </div>
       )}
 
-      
       <Link to={`master-project/${id}`}>
         <div
-          className={`${styles.container} ${isDeleting===id ? styles.deleting : ""}`}
+          className={`${styles.container} ${
+            isDeleting === id ? styles.deleting : ""
+          }`}
         >
           <div className={styles.img}>
             <img src={imageUrl} alt={title} />
@@ -93,7 +94,7 @@ const Project = ({id, title, author, imageUrl, onDelete}: Props) => {
 
           <div className={styles.projectInfo}>
             <p className={styles.title}>{title}</p>
-            <p className={styles.span}>{author}</p>
+            <p className={styles.span}>{description}</p>
           </div>
         </div>
       </Link>

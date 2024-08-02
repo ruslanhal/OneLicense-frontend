@@ -82,7 +82,7 @@ const HomePage = (props: Props) => {
               key={index}
               id={project.id}
               title={project.title}
-              author={project.author}
+              description={project.description}
               imageUrl={project?.images[0].thumbnailUrl}
               onDelete={async () => {
                 handleDelete(project.id);

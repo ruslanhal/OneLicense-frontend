@@ -2,7 +2,7 @@ export interface IProjectEntity {
   id: string;
   title: string;
   description: string;
-  author: string;
+
   ownerId: string;
   images: IImage[];
   createdAt: string;
