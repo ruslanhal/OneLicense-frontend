@@ -1,45 +1,52 @@
 import Project from "@/components/Project/Project";
 import React, {useEffect, useState} from "react";
-
-import defaultImg from "@/assets/Kaye_0147.png";
-
 import IconAddNew from "@/assets/IconAddNew";
 import {useNavigate} from "react-router-dom";
 import {
   createProject,
   deleteProject,
   getAllMyProjects,
+  getAllProjects,
 } from "@/apiClient/services/project/project.service";
 import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
-import PurchaseRequest from "@/components/PurchaseRequest/PurchaseRequest";
-import styles from "./HomePage.module.scss";
 import Skeleton from "@/components/Skeleton/Skeleton";
+import {authHook} from "@/apiClient/hooks/authHooks";
+import styles from "./HomePage.module.scss";
 
 interface Props {}
 
 const HomePage = (props: Props) => {
   const navigate = useNavigate();
-
   const [projects, setProjects] = useState<IProjectEntity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  const {user, isLoading: isUserLoading} = authHook();
 
   useEffect(() => {
     const fetchAllProjects = async () => {
       setIsLoading(true);
       try {
-        const projects = await getAllMyProjects();
-
-        setProjects(projects);
-        console.log("=-=-=-=0--=0-=0-=0-=projects", projects);
+        if (user) {
+          let projects;
+          if (user.role === "creator") {
+            projects = await getAllMyProjects();
+          } else if (user.role === "supplier") {
+            projects = await getAllProjects();
+          }
+          setProjects(projects);
+          console.log("-=-=-=-=-=-=-=-=--=projects", projects);
+        }
       } catch (e) {
         console.log(e);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchAllProjects();
-  }, []);
+
+    if (!isUserLoading) {
+      fetchAllProjects();
+    }
+  }, [user, isUserLoading]);
 
   const handleCreateProject = async () => {
     try {
@@ -58,18 +65,22 @@ const HomePage = (props: Props) => {
       await deleteProject(projectId);
       const newProjects = projects.filter((proj) => proj.id !== projectId);
       setProjects(newProjects);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
   };
 
   return (
     <>
-      <div className="flex justify-center items-center  mb-16">
-        <button
-          onClick={handleCreateProject}
-          className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA]  border-[1px] rounded-full"
-        >
-          <IconAddNew />
-        </button>
+      <div className="flex justify-center items-center mb-16">
+        {user?.role === "creator" ? (
+          <button
+            onClick={handleCreateProject}
+            className="flex justify-center items-center min-w-[40px] min-h-[40px] w-[40px] h-[40px] bg-[#F9F9F9] border-[#EAEAEA] border-[1px] rounded-full"
+          >
+            <IconAddNew />
+          </button>
+        ) : null}
       </div>
       <div
         className={
@@ -83,7 +94,7 @@ const HomePage = (props: Props) => {
               id={project.id}
               title={project.title}
               description={project.description}
-              imageUrl={project?.images[0].thumbnailUrl}
+              imageUrl={project?.images[0]?.thumbnailUrl}
               onDelete={async () => {
                 handleDelete(project.id);
               }}

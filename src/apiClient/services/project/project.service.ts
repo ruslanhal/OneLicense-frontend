@@ -106,6 +106,36 @@ export const getAllMyProjects = async () => {
   }
 };
 
+export const searchProjects=async (searchString:string)=>{
+  try{
+    const response=await axiosClient.post('/project/search', {searchString});
+    return response.data;
+
+  }
+  catch(error:any){
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+}
+
+
+export const getAllProjects=async ()=>{
+  try{
+    const response=await axiosClient.get('/project');
+    return response.data;
+  }
+  catch(error:any){
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+}
+
 export const generatePresignedUrls = async (
   projectId: string,
   files: IFileReq[]
