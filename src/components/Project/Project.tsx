@@ -2,8 +2,9 @@ import React, {useState} from "react";
 import styles from "./Project.module.scss";
 import {Link} from "react-router-dom";
 import DelIcon from "@/assets/DelIcon";
-import {X, CheckCircle, XCircle} from "react-feather";
+import {X} from "react-feather";
 import Button from "../Button/Button";
+import {authHook} from "../../apiClient/hooks/authHooks";
 
 type Props = {
   id: string;
@@ -15,6 +16,7 @@ type Props = {
 
 const Project = ({id, title, description, imageUrl, onDelete}: Props) => {
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
+  const {user} = authHook();
 
   const [isDeleting, setIsDeleting] = useState<string>("");
 
@@ -88,9 +90,9 @@ const Project = ({id, title, description, imageUrl, onDelete}: Props) => {
             <img src={imageUrl} alt={title} />
           </div>
 
-          <button className={styles.deleteIcon} onClick={handleDeleteClick}>
+          {user.role==='creator'?<button className={styles.deleteIcon} onClick={handleDeleteClick}>
             <DelIcon />
-          </button>
+          </button>:null}
 
           <div className={styles.projectInfo}>
             <p className={styles.title}>{title}</p>

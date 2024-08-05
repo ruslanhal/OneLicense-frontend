@@ -1,12 +1,14 @@
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "./App.scss";
 import MainLayout from "./Layouts/MainLayout";
-import {authHook} from "./apiClient/hooks/authHooks";
+import { authHook } from "./apiClient/hooks/authHooks";
+import { useState } from "react";
+import { SearchProvider } from "./apiClient/contexts/SearchContext";
 
 function App() {
   const navigate = useNavigate();
-  const {user, isLoading} = authHook();
+  const { user, isLoading } = authHook();
   // console.log("-==-=-=-=-=-=-app user", user);
   // console.log("-==-=-=-=-=-=-app error", error);
   if (!user && !isLoading) {
@@ -20,7 +22,9 @@ function App() {
 
   return (
     <>
-      <MainLayout />
+      <SearchProvider>
+        <MainLayout />
+      </SearchProvider>
     </>
   );
 }

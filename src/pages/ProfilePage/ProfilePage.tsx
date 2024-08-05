@@ -9,6 +9,7 @@ import { IUser } from "@/common/types/user.types";
 import { AxiosError } from "axios";
 import { axiosClient } from "@/apiClient/apiClient";
 import { useState } from "react";
+import { authHook } from "@/apiClient/hooks/authHooks";
 
 const fetchUserProfile = async (): Promise<IUser> => {
   const response = await axiosClient.get("/auth/me");
@@ -18,20 +19,21 @@ const fetchUserProfile = async (): Promise<IUser> => {
 export default function ProfilePage() {
   const [isAUDOpened, setIsAUDOpened] = useState(false);
   const [price, setPrice] = useState("$15");
+  const { user, isLoading: isUserLoading } = authHook();
 
-  const { data: user, isLoading, error } = useQuery<IUser, AxiosError>({
-    queryKey: ["profile"],
-    queryFn: fetchUserProfile,
-  });
+  // const { data: user, isLoading, error } = useQuery<IUser, AxiosError>({
+  //   queryKey: ["profile"],
+  //   queryFn: fetchUserProfile,
+  // });
 
-  const navigate = useNavigate();
+   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/auth");
-  };
+ const handleLogout = async () => {
+     await logout();
+     navigate("/auth");
+ };
 
-  if (error) return <div>Error: {error.message}</div>;
+  // if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className={styles.contantCreatorContainer}>
