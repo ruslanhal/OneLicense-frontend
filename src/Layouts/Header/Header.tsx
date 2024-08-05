@@ -28,9 +28,20 @@ const Header = ({ isSupplier }: HeaderProps) => {
   const [isSideBarOpened, setIsSideBarOpened] = useState(false);
   const { searchText, setSearchText } = useSearch();
 
+  const [search, setSearch]=useState("")
+
   const handleOpenSideBar = (value: boolean) => {
     setIsSideBarOpened(value);
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (value === '') {
+      setSearchText('');
+    }
+  };
+
 
   return (
     <header>
@@ -48,13 +59,10 @@ const Header = ({ isSupplier }: HeaderProps) => {
             <Button styleType="button_header" text="Licenses" />
           </Link>
 
-          <form>
+          <form onSubmit={(e)=>{e.preventDefault();setSearchText(search);}}>
             <input
-              value={searchText}
-              onChange={(e) => {
-                setSearchText(e.target.value);
-                console.log(searchText);
-              }}
+              value={search}
+              onChange={handleInputChange}
               placeholder="Search project"
               className={styles.input}
             ></input>

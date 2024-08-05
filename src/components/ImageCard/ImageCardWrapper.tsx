@@ -22,10 +22,10 @@ interface Image {
 type Props = {
   isSupplier?: boolean;
   imageList?: Image[];
-  files: File[];
-  uploadProgress: number[];
+  files?: File[];
+  uploadProgress?: number[];
   projectId: string;
-  handleDelete: (imageId: string) => Promise<void>;
+  handleDelete?: (imageId: string) => Promise<void>;
 };
 
 const ImageCardWraper = ({

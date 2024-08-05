@@ -1,6 +1,6 @@
-// src/contexts/SearchContext.tsx
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+
 
 interface SearchContextType {
   searchText: string;

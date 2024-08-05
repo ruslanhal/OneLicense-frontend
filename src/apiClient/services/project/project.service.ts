@@ -108,7 +108,8 @@ export const getAllMyProjects = async () => {
 
 export const searchProjects=async (searchString:string)=>{
   try{
-    const response=await axiosClient.post('/project/search', {searchString});
+    const response=await axiosClient.post('/project/search', {searchString:searchString});
+    console.log(response.data)
     return response.data;
 
   }

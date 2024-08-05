@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
         path: "/master-project/:projectId",
         element: (
           <ProtectedRoute
-            role="creator"
+            role="both"
             redirectPath="/"
             Component={MasterProjectPage}
           />
