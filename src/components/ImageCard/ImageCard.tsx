@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
+import { authHook } from "@/apiClient/hooks/authHooks";
 
 interface Image {
   id: string;
@@ -39,6 +40,8 @@ const ImgCard: React.FC<Props> = ({
   draggedOverItem,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { user, isLoading: isUserLoading } = authHook();
+  const [addedToCart, setAddedToCart]=useState(false)
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setIsDeleting(true);
@@ -55,25 +58,25 @@ const ImgCard: React.FC<Props> = ({
 
   return (
     <div
-      draggable={true}
+      draggable={user?.role==='creator'?true:false}
       onClick={() => onClick(item.originalUrl)}
       className={`${styles.container} ${
         draggedOverItem === item.id ? styles.draggedOver : ""
       } ${isDeleting ? styles.loading : ""}`}
       onDragStart={(e) => onDragStart(e, item)}
       onDragEnd={onDragEnd}
-      onDragOver={(e) => onDragOver(e, item)}
-      onDrop={(e) => onDrop(e, item)}
+      onDragOver={(e) =>onDragOver(e, item)}
+      onDrop={(e) =>onDrop(e, item)}
       key={item.id}
-      style={{
+      style={user?.role==='creator'?{
         opacity: isDragging && currentCardId === item.id ? 1 : undefined,
-      }}
+      }:{cursor:'auto'}}
     >
-      <div className={styles.deleteIcon}>
+      {user?.role==='creator'?<div className={styles.deleteIcon}>
         <button onClick={handleDeleteClick} disabled={isDeleting}>
           <DelIcon />
         </button>
-      </div>
+      </div>:null}
 
       <div className={styles.img}>
         <img src={item.thumbnailUrl} alt={item.title} />
@@ -85,8 +88,9 @@ const ImgCard: React.FC<Props> = ({
       </div>
 
       <div className={styles.buttons}>
-        <button className={styles.button}>{item.price}</button>
+        <button className={styles.button} onClick={(e)=>e.stopPropagation()}>{item.price}</button>
         {/* Replace with actual logic for showing "Add to cart" button */}
+        {user?.role==='supplier'?<button className={addedToCart?`${styles.button1} ${styles.selected}`:styles.button1} onClick={(e)=>{e.stopPropagation(); setAddedToCart(!addedToCart)}}>{addedToCart?'In cart':'Add to cart'}</button>:null}
       </div>
     </div>
   );

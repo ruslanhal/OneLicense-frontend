@@ -8,6 +8,7 @@ import {
   resortImages,
 } from "@/apiClient/services/project/project.service";
 import ImgCard from "./ImageCard";
+import { authHook } from "@/apiClient/hooks/authHooks";
 
 interface Image {
   id: string;
@@ -48,6 +49,7 @@ const ImageCardWraper = ({
   const [draggedOverItem, setDraggedOverItem] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [openedImage, setOpenedImage] = useState<string>("");
+  const { user, isLoading: isUserLoading } = authHook();
 
   useEffect(() => {
     return () => {
@@ -62,11 +64,17 @@ const ImageCardWraper = ({
   }, [imageList]);
 
   function dragStartHandler(e: React.DragEvent<HTMLDivElement>, item: Image) {
+    if(user?.role!=='creator'){
+      return
+    }
     setCurrentCard(item);
     setIsDragging(true);
   }
 
   function dragEndHandler(e: React.DragEvent<HTMLDivElement>) {
+    if(user?.role!=='creator'){
+      return
+    }
     e.preventDefault();
     setDraggedOverItem(null);
     setIsDragging(false);
@@ -76,11 +84,17 @@ const ImageCardWraper = ({
     e: React.DragEvent<HTMLDivElement>,
     item: {id: string}
   ) {
+    if(user?.role!=='creator'){
+      return
+    }
     e.preventDefault();
     setDraggedOverItem(item.id);
   }
 
   function dropHandler(e: React.DragEvent<HTMLDivElement>, item: Image) {
+    if(user?.role!=='creator'){
+      return
+    }
     e.preventDefault();
     if (currentCard === null) return;
 

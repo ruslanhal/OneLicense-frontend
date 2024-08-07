@@ -2,31 +2,25 @@ import Button from "@/components/Button/Button";
 import Logo from "../../assets/logo.svg";
 import Notification from "@/assets/Notification/Notification";
 import Basket from "@/assets/Basket";
-
 import { authHook } from "@/apiClient/hooks/authHooks";
 import { useState } from "react";
 import UserDropdown from "@/components/UserDropdown/UserDropdown";
-
 import { useQueryClient } from "@tanstack/react-query";
-import { IUser } from "@/common/types/user.types";
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
 import BasketSidebar from "../BasketSidebar/BasketSidebar";
 import { useSearch } from "@/apiClient/contexts/SearchContext";
 
-interface HeaderProps {
-  isSupplier?: boolean;
-}
 
-const Header = ({ isSupplier }: HeaderProps) => {
+const Header = () => {
   // const {user} = authHook();
   // const data = queryClient.getQueryData(["profile"]);
   // console.log("-=-=-=-=-=data in header", data);
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<IUser>(["profile"]);
   // console.log("-=-=-=-=-=user in header", user);
   const [isSideBarOpened, setIsSideBarOpened] = useState(false);
   const { searchText, setSearchText } = useSearch();
+  const { user, isLoading: isUserLoading } = authHook();
 
   const [search, setSearch]=useState("")
 
@@ -41,7 +35,6 @@ const Header = ({ isSupplier }: HeaderProps) => {
       setSearchText('');
     }
   };
-
 
   return (
     <header>
@@ -68,7 +61,7 @@ const Header = ({ isSupplier }: HeaderProps) => {
             ></input>
           </form>
 
-          {isSupplier ? (
+          {user?.role==='supplier' ? (
             <div onClick={() => setIsSideBarOpened(true)}>
               <Basket />
             </div>

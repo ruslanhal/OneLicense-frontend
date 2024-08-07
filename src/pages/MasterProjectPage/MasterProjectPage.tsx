@@ -29,6 +29,7 @@ import {
   addTagToProject,
   removeTAGfromProject,
 } from "@/apiClient/services/tags/tag.service";
+import { authHook } from "@/apiClient/hooks/authHooks";
 
 interface Tag {
   id: string;
@@ -48,6 +49,7 @@ interface Image {
 const MasterProjectPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const { user, isLoading: isUserLoading } = authHook();
 
   const {projectId} = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
@@ -306,10 +308,10 @@ const MasterProjectPage = () => {
           <div className="w-[120px] h-[20px] bg-[#D3D3D3] rounded-md mb-[12px] animate-blinkTitle"></div>
         ) : null}
         {isLoading ? (
-          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md animate-blinkSpan"></div>
+          <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md animate-blinkSpan mb-5"></div>
         ) : null}
       </div>
-      <div className="flex justify-center items-center gap-2 mt-4 mb-5">
+      {user?.role==='creator'?<div className="flex justify-center items-center gap-2 mt-4 mb-5">
         <button
           onClick={() => {
             setIsDragAndDropOpened(true);
@@ -329,7 +331,7 @@ const MasterProjectPage = () => {
         <button onClick={() => {}}>
           <Save />
         </button>
-      </div>
+      </div>:null}
 
       {isDragAndDropOpened ? (
         <div className={styles.dragAndDropPosition}>
