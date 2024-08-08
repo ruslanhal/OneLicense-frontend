@@ -8,6 +8,7 @@ import {
   getAllMyProjects,
   getAllProjects,
   searchProjects,
+  searchMyProjects,
 } from "@/apiClient/services/project/project.service";
 import { IProjectEntity } from "@/apiClient/services/project/types/project.entities";
 import Skeleton from "@/components/Skeleton/Skeleton";
@@ -84,8 +85,15 @@ const HomePage = (props: Props) => {
         }
         setProjects(projects);
       } else {
-        const response = await searchProjects(searchText);
-        setProjects(response);
+        if (user?.role === "supplier") {
+          const response = await searchProjects(searchText);
+          setProjects(response);
+        } else if (user?.role === "creator") {
+          let projects = await searchMyProjects(searchText);
+          setProjects(projects);
+        }
+
+        console.log(user?.id)
       }
     };
     if (!isUserLoading) {

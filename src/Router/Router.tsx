@@ -8,10 +8,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "@/pages/Auth/LoginPage";
 import SignupPage from "@/pages/Auth/SignupPage";
 import AuthLayout from "@/Layouts/AuthLayout";
-import CreateProjectPage from "@/pages/CreateProjectPage/CreateProjectPage";
 import MasterProjectPage from "@/pages/MasterProjectPage/MasterProjectPage";
 import ProfilePage from "@/pages/ProfilePage/ProfilePage";
-import Licenses from "@/pages/Licenses/Licenses";
+import Purchase from "@/pages/Purchase/Purchase";
+import Licences from "@/pages/Licences/Licences";
 
 export const router = createBrowserRouter([
   {
@@ -52,16 +52,29 @@ export const router = createBrowserRouter([
         // children: [{path: "/collection/:collectionId", element: <><}],
       },
       {
+        path: "/purchase",
+        element: (
+          <ProtectedRoute
+            role="creator"
+            redirectPath="/purchase"
+            Component={Purchase}
+          />
+        ),
+        // children: [{path: "/collection/:collectionId", element: <><}],
+      },
+
+      {
         path: "/licenses",
         element: (
           <ProtectedRoute
             role="creator"
             redirectPath="/licenses"
-            Component={Licenses}
+            Component={Licences}
           />
         ),
         // children: [{path: "/collection/:collectionId", element: <><}],
       },
+      
     ],
   },
   {

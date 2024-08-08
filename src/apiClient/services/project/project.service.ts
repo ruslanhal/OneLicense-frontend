@@ -106,6 +106,21 @@ export const getAllMyProjects = async () => {
   }
 };
 
+export const searchMyProjects=async (searchString:string)=>{
+  try{
+    const response=await axiosClient.post('/project/search-creator', {searchString:searchString});
+    console.log(response.data);
+    return response.data;
+  }
+  catch (error: any) {
+    console.log("-=-=-=-=errro", error);
+    if (error?.response?.status === 401) {
+      throw "Unathorized.";
+    }
+    throw "Something went wrong, please try again later.";
+  }
+}
+
 export const searchProjects=async (searchString:string)=>{
   try{
     const response=await axiosClient.post('/project/search', {searchString:searchString});

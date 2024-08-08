@@ -66,7 +66,7 @@ const Header = () => {
               <Basket />
             </div>
           ) : (
-            <Notification />
+            <Link to='/purchase'><Notification /></Link>
           )}
 
           {/* <div>
