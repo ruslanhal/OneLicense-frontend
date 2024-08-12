@@ -1,12 +1,12 @@
 import Button from "@/components/Button/Button";
-import React from "react";
-import { X, Trash2 } from "react-feather";
+import React, {useEffect} from "react";
+import {X, Trash2} from "react-feather";
 
 interface BasketSideBarProps {
   close: (value: boolean) => void;
 }
 
-export default function BasketSidebar({ close }: BasketSideBarProps) {
+export default function BasketSidebar({close}: BasketSideBarProps) {
   const handleSidebarClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   };
@@ -14,6 +14,10 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     close(false);
   };
+
+  // useEffect(() => {
+  //   const fetchCart = async ()
+  // }, []);
 
   return (
     <div
