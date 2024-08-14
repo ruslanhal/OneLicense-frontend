@@ -1,23 +1,59 @@
+import { getCart, removeImageFromCart } from "@/apiClient/services/cart/cart.service";
 import Button from "@/components/Button/Button";
-import React, {useEffect} from "react";
-import {X, Trash2} from "react-feather";
+import CartItem from "@/components/CartItem/CartItem";
+import React, { useEffect, useState } from "react";
+import { X } from "react-feather";
 
 interface BasketSideBarProps {
   close: (value: boolean) => void;
 }
 
-export default function BasketSidebar({close}: BasketSideBarProps) {
-  const handleSidebarClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
+export default function BasketSidebar({ close }: BasketSideBarProps) {
+  const [cartList, setCartList] = useState([]);
+
+  const handleDelete = async (id: string) => {
+    setCartList((prevCartList) => prevCartList.filter((item) => item.id !== id));
+    const response=await removeImageFromCart(id);
+    console.log(response);
   };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     close(false);
   };
 
-  // useEffect(() => {
-  //   const fetchCart = async ()
-  // }, []);
+  const handleSidebarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
+  useEffect(() => {
+    const handleGetImagesFromCart = async () => {
+      try {
+        const response = await getCart();
+        console.log('API response:', response);
+
+        if (response && response.cartProject) {
+          const cartProjectImages = response.cartProject.flatMap((project) => {
+            const projectTitle = project.project?.title;
+
+            return (project.cartProjectImage || []).map((image) => ({
+              id: image.id,
+              ...image.image,
+              projectTitle,
+            }));
+          });
+          setCartList(cartProjectImages);
+        } else {
+          setCartList([]);
+        }
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+        setCartList([]);
+      }
+    };
+    handleGetImagesFromCart();
+  }, []);
+
+  const subtotal = cartList.reduce((sum, item) => sum + parseFloat(item.price || "0"), 0).toFixed(2);
 
   return (
     <div
@@ -29,45 +65,57 @@ export default function BasketSidebar({close}: BasketSideBarProps) {
         onClick={handleSidebarClick}
       >
         <div className="flex justify-between items-center mb-4">
-          <div className="font-bold">Your cart - 1 items</div>
+          <div className="font-bold">Your cart - {cartList.length} items</div>
           <X className="h-[20px] cursor-pointer" onClick={() => close(false)} />
         </div>
 
-        <div className="flex bg-white p-2 rounded-md items-center gap-0">
-          <div className="w-[50px] h-[50px] bg-black m-2 mr-4 ml-0"></div>
-          <div className="flex flex-col w-[180px] h-[60px] ">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold mb-[14px]">Image</span>
-              <span className="text-sm font-semibold mb-[14px]">$20.00</span>
-            </div>
+        <div className="flex flex-col gap-1">
+          {cartList.length > 0 ? (
+            cartList
+              .reduce((acc: any[], item) => {
+                const existingProject = acc.find(
+                  (project) => project.projectTitle === item.projectTitle
+                );
 
-            <div className="flex items-center">
-              <div className="flex items-center justify-center bg-gray-200 w-[20px] h-[20px] text-xs font-semibold rounded-tl-md rounded-bl-md cursor-pointer p-3 hover:bg-gray-300">
-                –
-              </div>
-              <div className="flex items-center justify-center bg-gray-200 w-[20px] h-[20px] text-xs font-medium p-3 hover:bg-gray-300 cursor-pointer">
-                1
-              </div>
-              <button className="flex items-center justify-center bg-gray-200 w-[20px] h-[20px] text-xs font-bold rounded-tr-md rounded-br-md cursor-pointer p-3 hover:bg-gray-300">
-                +
-              </button>
+                if (existingProject) {
+                  existingProject.images.push(item);
+                } else {
+                  acc.push({
+                    projectTitle: item.projectTitle,
+                    images: [item],
+                  });
+                }
 
-              <Trash2 className="h-[16px] cursor-pointer stroke-gray-500 ml-1" />
-            </div>
-          </div>
+                return acc;
+              }, [])
+              .map((project, index) => (
+                <div key={index} className="flex flex-col gap-1">
+                  <div className="font-semibold">{project.projectTitle}</div>
+                  {project.images.map((image, iIndex) => (
+                    <CartItem
+                      key={iIndex}
+                      id={image.id}
+                      title={image.title}
+                      price={image.price}
+                      image={image.url}
+                      currency={image.currency}
+                      handleDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              ))
+          ) : (
+            <div className="text-center mt-4">Your cart is empty</div>
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-4 text-sm font-semibold">
           <div>Subtotal</div>
-          <div>$20.00 AUD</div>
+          <div>${subtotal} AUD</div>
         </div>
 
         <div className="mt-5">
-          <Button
-            text="Check Out"
-            styleType="button_dark"
-            width="100%"
-          ></Button>
+          <Button text="Check Out" styleType="button_dark" width="100%" />
         </div>
       </div>
     </div>

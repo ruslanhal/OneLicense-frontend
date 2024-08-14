@@ -1,12 +1,13 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 import { authHook } from "@/apiClient/hooks/authHooks";
+import { addImageToCart } from "@/apiClient/services/cart/cart.service";
 
 interface Image {
   id: string;
   title: string;
-  price: string;
+  price: number;
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
@@ -14,7 +15,7 @@ interface Image {
 
 type Props = {
   item: Image;
-
+  projectId: string;
   isDragging: boolean;
   currentCardId: string | null;
   onDelete: () => void;
@@ -24,11 +25,11 @@ type Props = {
   onDragOver: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   draggedOverItem: string | null;
+  inCart:boolean
 };
 
 const ImgCard: React.FC<Props> = ({
   item,
-
   isDragging,
   currentCardId,
   onDelete,
@@ -38,10 +39,12 @@ const ImgCard: React.FC<Props> = ({
   onDragOver,
   onDrop,
   draggedOverItem,
+  projectId,
+  inCart
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { user, isLoading: isUserLoading } = authHook();
-  const [addedToCart, setAddedToCart]=useState(false)
+  const [addedToCart, setAddedToCart] = useState(inCart);
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setIsDeleting(true);
@@ -56,27 +59,44 @@ const ImgCard: React.FC<Props> = ({
     }
   };
 
+  const handleAddImageToCart = async () => {
+    console.log(item.id, projectId, item.price)
+    if (addedToCart) return;
+    const response = await addImageToCart({
+      imageId: item.id,
+      projectId: projectId,
+      price: item.price,
+    });
+    console.log(response);
+  };
+
   return (
     <div
-      draggable={user?.role==='creator'?true:false}
+      draggable={user?.role === "creator" ? true : false}
       onClick={() => onClick(item.originalUrl)}
       className={`${styles.container} ${
         draggedOverItem === item.id ? styles.draggedOver : ""
       } ${isDeleting ? styles.loading : ""}`}
       onDragStart={(e) => onDragStart(e, item)}
       onDragEnd={onDragEnd}
-      onDragOver={(e) =>onDragOver(e, item)}
-      onDrop={(e) =>onDrop(e, item)}
+      onDragOver={(e) => onDragOver(e, item)}
+      onDrop={(e) => onDrop(e, item)}
       key={item.id}
-      style={user?.role==='creator'?{
-        opacity: isDragging && currentCardId === item.id ? 1 : undefined,
-      }:{cursor:'auto'}}
+      style={
+        user?.role === "creator"
+          ? {
+              opacity: isDragging && currentCardId === item.id ? 1 : undefined,
+            }
+          : { cursor: "auto" }
+      }
     >
-      {user?.role==='creator'?<div className={styles.deleteIcon}>
-        <button onClick={handleDeleteClick} disabled={isDeleting}>
-          <DelIcon />
-        </button>
-      </div>:null}
+      {user?.role === "creator" ? (
+        <div className={styles.deleteIcon}>
+          <button onClick={handleDeleteClick} disabled={isDeleting}>
+            <DelIcon />
+          </button>
+        </div>
+      ) : null}
 
       <div className={styles.img}>
         <img src={item.thumbnailUrl} alt={item.title} />
@@ -88,9 +108,25 @@ const ImgCard: React.FC<Props> = ({
       </div>
 
       <div className={styles.buttons}>
-        <button className={styles.button} onClick={(e)=>e.stopPropagation()}>{item.price}</button>
-        {/* Replace with actual logic for showing "Add to cart" button */}
-        {user?.role==='supplier'?<button className={addedToCart?`${styles.button1} ${styles.selected}`:styles.button1} onClick={(e)=>{e.stopPropagation(); setAddedToCart(!addedToCart)}}>{addedToCart?'In cart':'Add to cart'}</button>:null}
+        <button className={styles.button} onClick={(e) => e.stopPropagation()}>
+          {item.price}
+        </button>
+        {user?.role === "supplier" ? (
+          <button
+            className={
+              addedToCart
+                ? `${styles.button1} ${styles.selected}`
+                : styles.button1
+            }
+            onClick={(e) => {
+              e.stopPropagation();
+              setAddedToCart(!addedToCart);
+              handleAddImageToCart()
+            }}
+          >
+            {addedToCart ? "In cart" : "Add to cart"}
+          </button>
+        ) : null}
       </div>
     </div>
   );

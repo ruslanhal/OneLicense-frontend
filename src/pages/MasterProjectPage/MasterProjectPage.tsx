@@ -30,11 +30,7 @@ import {
   removeTAGfromProject,
 } from "@/apiClient/services/tags/tag.service";
 import { authHook } from "@/apiClient/hooks/authHooks";
-
-interface Tag {
-  id: string;
-  name: string;
-}
+import { getCartFromProject } from "@/apiClient/services/cart/cart.service";
 
 interface Image {
   id: string;
@@ -168,7 +164,7 @@ const MasterProjectPage = () => {
     isLoading: tagsIsloading,
   } = useGetTAGSofProject(projectId);
 
-  console.log("-=-=-=-=-=TAGS ARR", tagsArr);
+//  console.log("-=-=-=-=-=TAGS ARR", tagsArr);
   useEffect(() => {
     setTagsList(tagsArr);
   }, [tagsArr]);
@@ -194,28 +190,35 @@ const MasterProjectPage = () => {
     const fetchFiles = async () => {
       try {
         const response = await axiosClient.get(`/project/${projectId}`);
-        console.log("API response:", response.data);
-
-        let index = 0;
+        console.log("Project ID:", projectId);
+  
+        const responseCart = await getCartFromProject(projectId);
+        console.log('Images from cart:', responseCart);
+  
+        const cartImageIds = responseCart.map(item => item.imageId);
+  
         const newArr = response.data.images.map((item) => {
-          // index = index + 1;
           return {
             ...item,
-            // orderIndex: index,
+            inCart: cartImageIds.includes(item.id)
           };
         });
-        // .sort((a, b) => b.orderIndex - a.orderIndex)
+  
         setImageList(newArr.sort((a, b) => b.orderIndex - a.orderIndex));
+        console.log(imageList)
+
+        console.log(newArr)
       } catch (error) {
         console.error("Error fetching files:", error);
       }
     };
-
+  
     if (projectId) {
       setFlag(0);
       fetchFiles();
     }
   }, [projectId, flag]);
+  
 
   const handleUpdateProject = async (
     key: "title" | "description",
@@ -231,10 +234,6 @@ const MasterProjectPage = () => {
   if (!projectId) {
     return <div>Error: Project is not available</div>;
   }
-
-  useEffect(() => {
-    console.log(imageList);
-  }, [imageList]);
 
   const {
     isLoading,

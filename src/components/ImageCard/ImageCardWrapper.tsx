@@ -18,6 +18,7 @@ interface Image {
   thumbnailUrl: string;
   originalUrl: string;
   orderIndex: number;
+  inCart:boolean
 }
 
 type Props = {
@@ -30,7 +31,6 @@ type Props = {
 };
 
 const ImageCardWraper = ({
-  isSupplier,
   imageList = [],
   files = [],
   uploadProgress,
@@ -141,7 +141,6 @@ const ImageCardWraper = ({
         ))}
 
         {imageListItems
-          // .sort((a, b) => b.orderIndex - a.orderIndex)
           .map((item) => (
             <ImgCard
               key={item.id}
@@ -156,7 +155,9 @@ const ImageCardWraper = ({
               onDragEnd={dragEndHandler}
               onDragOver={dragOverHandler}
               onDrop={dropHandler}
+              projectId={projectId}
               draggedOverItem={draggedOverItem}
+              inCart={item.inCart}
             />
           ))}
       </div>
