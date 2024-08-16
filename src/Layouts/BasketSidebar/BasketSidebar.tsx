@@ -1,4 +1,7 @@
-import { getCart, removeImageFromCart } from "@/apiClient/services/cart/cart.service";
+import {
+  getCart,
+  removeImageFromCart,
+} from "@/apiClient/services/cart/cart.service";
 import Button from "@/components/Button/Button";
 import CartItem from "@/components/CartItem/CartItem";
 import React, { useEffect, useState } from "react";
@@ -8,12 +11,16 @@ interface BasketSideBarProps {
   close: (value: boolean) => void;
 }
 
+////////to do : refactor, do normal structure of data (cart and it's items)
+
 export default function BasketSidebar({ close }: BasketSideBarProps) {
   const [cartList, setCartList] = useState([]);
 
-  const handleDelete = async (id: string) => {
-    setCartList((prevCartList) => prevCartList.filter((item) => item.id !== id));
-    const response=await removeImageFromCart(id);
+  const handleDelete = async (imageId: string, cartImageId: string) => {
+    setCartList((prevCartList) =>
+      prevCartList.filter((item) => item.id !== imageId)
+    );
+    const response = await removeImageFromCart(cartImageId);
     console.log(response);
   };
 
@@ -29,18 +36,19 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
     const handleGetImagesFromCart = async () => {
       try {
         const response = await getCart();
-        console.log('API response:', response);
+        console.log("API response:", response);
 
         if (response && response.cartProject) {
           const cartProjectImages = response.cartProject.flatMap((project) => {
             const projectTitle = project.project?.title;
 
             return (project.cartProjectImage || []).map((image) => ({
-              id: image.id,
+              cartProjectImageId: image.id,
               ...image.image,
               projectTitle,
             }));
           });
+          console.log("-=-=-=-=-=cartProjectImages", cartProjectImages);
           setCartList(cartProjectImages);
         } else {
           setCartList([]);
@@ -53,7 +61,9 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
     handleGetImagesFromCart();
   }, []);
 
-  const subtotal = cartList.reduce((sum, item) => sum + parseFloat(item.price || "0"), 0).toFixed(2);
+  const subtotal = cartList
+    .reduce((sum, item) => sum + parseFloat(item.price || "0"), 0)
+    .toFixed(2);
 
   return (
     <div
@@ -94,10 +104,11 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
                   {project.images.map((image, iIndex) => (
                     <CartItem
                       key={iIndex}
+                      cartImageId={image.cartProjectImageId}
                       id={image.id}
                       title={image.title}
                       price={image.price}
-                      image={image.url}
+                      image={image.thumbnailUrl}
                       currency={image.currency}
                       handleDelete={handleDelete}
                     />

@@ -8,6 +8,7 @@ interface Image {
   id: string;
   title: string;
   price: number;
+  currency: string;
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
@@ -25,7 +26,7 @@ type Props = {
   onDragOver: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   draggedOverItem: string | null;
-  inCart:boolean
+  inCart: boolean;
 };
 
 const ImgCard: React.FC<Props> = ({
@@ -40,7 +41,7 @@ const ImgCard: React.FC<Props> = ({
   onDrop,
   draggedOverItem,
   projectId,
-  inCart
+  inCart,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { user, isLoading: isUserLoading } = authHook();
@@ -60,7 +61,7 @@ const ImgCard: React.FC<Props> = ({
   };
 
   const handleAddImageToCart = async () => {
-    console.log(item.id, projectId, item.price)
+    console.log(item.id, projectId, item.price);
     if (addedToCart) return;
     const response = await addImageToCart({
       imageId: item.id,
@@ -121,7 +122,7 @@ const ImgCard: React.FC<Props> = ({
             onClick={(e) => {
               e.stopPropagation();
               setAddedToCart(!addedToCart);
-              handleAddImageToCart()
+              handleAddImageToCart();
             }}
           >
             {addedToCart ? "In cart" : "Add to cart"}

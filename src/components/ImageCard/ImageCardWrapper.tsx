@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 import ImageUploadCard from "./ImageUploadCard";
@@ -13,12 +13,13 @@ import { authHook } from "@/apiClient/hooks/authHooks";
 interface Image {
   id: string;
   title: string;
-  price: string;
+  price: number;
+  currency: string;
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
   orderIndex: number;
-  inCart:boolean
+  inCart: boolean;
 }
 
 type Props = {
@@ -64,16 +65,16 @@ const ImageCardWraper = ({
   }, [imageList]);
 
   function dragStartHandler(e: React.DragEvent<HTMLDivElement>, item: Image) {
-    if(user?.role!=='creator'){
-      return
+    if (user?.role !== "creator") {
+      return;
     }
     setCurrentCard(item);
     setIsDragging(true);
   }
 
   function dragEndHandler(e: React.DragEvent<HTMLDivElement>) {
-    if(user?.role!=='creator'){
-      return
+    if (user?.role !== "creator") {
+      return;
     }
     e.preventDefault();
     setDraggedOverItem(null);
@@ -82,18 +83,18 @@ const ImageCardWraper = ({
 
   function dragOverHandler(
     e: React.DragEvent<HTMLDivElement>,
-    item: {id: string}
+    item: { id: string }
   ) {
-    if(user?.role!=='creator'){
-      return
+    if (user?.role !== "creator") {
+      return;
     }
     e.preventDefault();
     setDraggedOverItem(item.id);
   }
 
   function dropHandler(e: React.DragEvent<HTMLDivElement>, item: Image) {
-    if(user?.role!=='creator'){
-      return
+    if (user?.role !== "creator") {
+      return;
     }
     e.preventDefault();
     if (currentCard === null) return;
@@ -104,7 +105,7 @@ const ImageCardWraper = ({
     const hoverIndex = newList.findIndex((c) => c.id === item.id);
 
     newList.splice(dragIndex, 1);
-    newList.splice(hoverIndex, 0, {...currentCard, orderIndex: hoverIndex});
+    newList.splice(hoverIndex, 0, { ...currentCard, orderIndex: hoverIndex });
 
     const updatedList = newList.map((img, index) => ({
       ...img,
@@ -113,7 +114,7 @@ const ImageCardWraper = ({
     updatedList.sort((a, b) => b.orderIndex - a.orderIndex);
 
     const paramsResorted = updatedList.map((image) => {
-      return {imageId: image.id, orderIndex: image.orderIndex};
+      return { imageId: image.id, orderIndex: image.orderIndex };
     });
     setresortedImages(paramsResorted);
     setImageListItems(updatedList);
@@ -140,26 +141,25 @@ const ImageCardWraper = ({
           />
         ))}
 
-        {imageListItems
-          .map((item) => (
-            <ImgCard
-              key={item.id}
-              item={item}
-              isDragging={isDragging}
-              currentCardId={currentCard?.id || null}
-              onDelete={async () => {
-                handleDelete(item.id);
-              }}
-              onClick={setOpenedImage}
-              onDragStart={dragStartHandler}
-              onDragEnd={dragEndHandler}
-              onDragOver={dragOverHandler}
-              onDrop={dropHandler}
-              projectId={projectId}
-              draggedOverItem={draggedOverItem}
-              inCart={item.inCart}
-            />
-          ))}
+        {imageListItems.map((item) => (
+          <ImgCard
+            key={item.id}
+            item={item}
+            isDragging={isDragging}
+            currentCardId={currentCard?.id || null}
+            onDelete={async () => {
+              handleDelete(item.id);
+            }}
+            onClick={setOpenedImage}
+            onDragStart={dragStartHandler}
+            onDragEnd={dragEndHandler}
+            onDragOver={dragOverHandler}
+            onDrop={dropHandler}
+            projectId={projectId}
+            draggedOverItem={draggedOverItem}
+            inCart={item.inCart}
+          />
+        ))}
       </div>
     </div>
   );

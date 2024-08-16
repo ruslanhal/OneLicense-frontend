@@ -1,6 +1,6 @@
-import {axiosClient} from "@/apiClient/apiClient";
-import {IAddImageToCartReq} from "./types/cart.reqs.types";
-import {ICart, ICartProjectImage} from "./types/cart.entities";
+import { axiosClient } from "@/apiClient/apiClient";
+import { IAddImageToCartReq } from "./types/cart.reqs.types";
+import { ICart, ICartProjectImage } from "./types/cart.entities";
 
 export const getCart = async (): Promise<ICart> => {
   try {
@@ -20,7 +20,7 @@ export const addImageToCart = async (
   reqData: IAddImageToCartReq
 ): Promise<ICartProjectImage> => {
   try {
-    const response = await axiosClient.post("/cart", {...reqData});
+    const response = await axiosClient.post("/cart", { ...reqData });
     console.log("-=-=-=-=-responsedata addImageToCart", response.data);
     return response.data;
   } catch (error: any) {
@@ -34,6 +34,7 @@ export const addImageToCart = async (
 
 export const removeImageFromCart = async (cartProjectImageId: string) => {
   try {
+    console.log("0-=-=-=-=-=-cartProjectImageId", cartProjectImageId);
     const response = await axiosClient.delete(`/cart/${cartProjectImageId}`);
     console.log("-=-=-=-=-responsedata addImageToCart", response.data);
     return response.data;
@@ -45,7 +46,6 @@ export const removeImageFromCart = async (cartProjectImageId: string) => {
     throw "Something went wrong, please try again later.";
   }
 };
-
 
 export const getCartFromProject = async (projectId: string) => {
   try {
@@ -61,4 +61,3 @@ export const getCartFromProject = async (projectId: string) => {
     throw "Something went wrong, please try again later.";
   }
 };
-

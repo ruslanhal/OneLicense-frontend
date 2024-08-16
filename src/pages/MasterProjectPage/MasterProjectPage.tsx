@@ -1,30 +1,28 @@
-import React, {useEffect, useRef, useState} from "react";
-import {useParams} from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 
-import iconSave from "@/assets/icon_save.svg";
 import Project from "@/components/Project/Project";
-import {useGetProject} from "@/apiClient/hooks/projectHooks";
+import { useGetProject } from "@/apiClient/hooks/projectHooks";
 import styles from "./MasterProjectPage.module.scss";
 import TagsForm from "../../components/TagsForm/TagsForm";
 import IconAddNew from "@/assets/IconAddNew";
 import Tabs from "@/assets/Tabs";
 import Save from "@/assets/Save";
-import {axiosClient} from "@/apiClient/apiClient";
+import { axiosClient } from "@/apiClient/apiClient";
 import ImageCard from "@/components/ImageCard/ImageCardWrapper";
 import {
   deleteOneImage,
   generatePresignedUrls,
   updateProject,
-  uploadImageToS3,
   wrapperUploadImages,
 } from "@/apiClient/services/project/project.service";
-import {IPresignedURL} from "@/apiClient/services/project/types/project.entities";
+import { IPresignedURL } from "@/apiClient/services/project/types/project.entities";
 import CancelIcon from "../../assets/icon_cancel.svg";
 import Loader from "@/components/Loader/Loader";
 import Skeleton from "@/components/Skeleton/Skeleton";
-import {ITag} from "@/apiClient/services/tags/types/tag.entities";
-import {useGetTAGSofProject} from "@/apiClient/services/tags/tag.hooks";
+import { ITag } from "@/apiClient/services/tags/types/tag.entities";
+import { useGetTAGSofProject } from "@/apiClient/services/tags/tag.hooks";
 import {
   addTagToProject,
   removeTAGfromProject,
@@ -35,11 +33,13 @@ import { getCartFromProject } from "@/apiClient/services/cart/cart.service";
 interface Image {
   id: string;
   title: string;
-  price: string;
+  price: number;
+  currency: string;
   author: string;
   thumbnailUrl: string;
   originalUrl: string;
   orderIndex: number;
+  inCart: boolean;
 }
 
 const MasterProjectPage = () => {
@@ -47,7 +47,7 @@ const MasterProjectPage = () => {
   const [description, setDescription] = useState("");
   const { user, isLoading: isUserLoading } = authHook();
 
-  const {projectId} = useParams();
+  const { projectId } = useParams();
   const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [isDragAndDropOpened, setIsDragAndDropOpened] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -89,7 +89,7 @@ const MasterProjectPage = () => {
       }
 
       const filesArr = newFiles.map((file) => {
-        return {title: file.name, description: "", mimeType: file.type};
+        return { title: file.name, description: "", mimeType: file.type };
       });
 
       const presignedUrlArr = await generatePresignedUrls(projectId, filesArr);
@@ -104,8 +104,8 @@ const MasterProjectPage = () => {
         const presignedThumbnailUrl =
           presignedUrlArr[index].presignedThumbnailUrl;
 
-        const {url: origUrl, fields: origFields} = presignedOrigUrl;
-        const {url: thumbnailUrl, fields: thumbnailFields} =
+        const { url: origUrl, fields: origFields } = presignedOrigUrl;
+        const { url: thumbnailUrl, fields: thumbnailFields } =
           presignedThumbnailUrl;
 
         const origFormData = new FormData();
@@ -164,7 +164,7 @@ const MasterProjectPage = () => {
     isLoading: tagsIsloading,
   } = useGetTAGSofProject(projectId);
 
-//  console.log("-=-=-=-=-=TAGS ARR", tagsArr);
+  //  console.log("-=-=-=-=-=TAGS ARR", tagsArr);
   useEffect(() => {
     setTagsList(tagsArr);
   }, [tagsArr]);
@@ -172,7 +172,7 @@ const MasterProjectPage = () => {
   const handleaddTagToProject = async (tagTitle: "title") => {
     const addTagResponse = await addTagToProject("title", tagTitle, projectId);
     console.log("-=-=-=-=-=-new asigned tag in master project", addTagResponse);
-    const newTag = {id: addTagResponse.tagId, title: tagTitle};
+    const newTag = { id: addTagResponse.tagId, title: tagTitle };
     setTagsList([...tagsList, newTag]);
   };
 
@@ -191,34 +191,33 @@ const MasterProjectPage = () => {
       try {
         const response = await axiosClient.get(`/project/${projectId}`);
         console.log("Project ID:", projectId);
-  
+
         const responseCart = await getCartFromProject(projectId);
-        console.log('Images from cart:', responseCart);
-  
-        const cartImageIds = responseCart.map(item => item.imageId);
-  
+        console.log("Images from cart:", responseCart);
+
+        const cartImageIds = responseCart.map((item) => item.imageId);
+
         const newArr = response.data.images.map((item) => {
           return {
             ...item,
-            inCart: cartImageIds.includes(item.id)
+            inCart: cartImageIds.includes(item.id),
           };
         });
-  
-        setImageList(newArr.sort((a, b) => b.orderIndex - a.orderIndex));
-        console.log(imageList)
 
-        console.log(newArr)
+        setImageList(newArr.sort((a, b) => b.orderIndex - a.orderIndex));
+        console.log(imageList);
+
+        console.log(newArr);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
     };
-  
+
     if (projectId) {
       setFlag(0);
       fetchFiles();
     }
   }, [projectId, flag]);
-  
 
   const handleUpdateProject = async (
     key: "title" | "description",
@@ -310,27 +309,29 @@ const MasterProjectPage = () => {
           <div className="w-[90px] h-[10px] bg-[#E8E9EB] rounded-md animate-blinkSpan mb-5"></div>
         ) : null}
       </div>
-      {user?.role==='creator'?<div className="flex justify-center items-center gap-2 mt-4 mb-5">
-        <button
-          onClick={() => {
-            setIsDragAndDropOpened(true);
-            setIsTagsOpen(false);
-          }}
-        >
-          <IconAddNew />
-        </button>
-        <button
-          onClick={() => {
-            setIsTagsOpen(true);
-            setIsDragAndDropOpened(false);
-          }}
-        >
-          <Tabs />
-        </button>
-        <button onClick={() => {}}>
-          <Save />
-        </button>
-      </div>:null}
+      {user?.role === "creator" ? (
+        <div className="flex justify-center items-center gap-2 mt-4 mb-5">
+          <button
+            onClick={() => {
+              setIsDragAndDropOpened(true);
+              setIsTagsOpen(false);
+            }}
+          >
+            <IconAddNew />
+          </button>
+          <button
+            onClick={() => {
+              setIsTagsOpen(true);
+              setIsDragAndDropOpened(false);
+            }}
+          >
+            <Tabs />
+          </button>
+          <button onClick={() => {}}>
+            <Save />
+          </button>
+        </div>
+      ) : null}
 
       {isDragAndDropOpened ? (
         <div className={styles.dragAndDropPosition}>
@@ -358,7 +359,7 @@ const MasterProjectPage = () => {
               </div>
               <span className={styles.dragAndDropTextSpan}>
                 Upload{" "}
-                <span style={{borderBottom: "1px solid #343434"}}>
+                <span style={{ borderBottom: "1px solid #343434" }}>
                   High Resolution JPG files
                 </span>{" "}
                 by dropping them into this window

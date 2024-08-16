@@ -1,6 +1,6 @@
 import axios from "axios";
-import {refreshToken} from "./services/auth/auth.service";
-import {Navigate} from "react-router";
+import { refreshToken } from "./services/auth/auth.service";
+import { Navigate } from "react-router";
 
 export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -67,14 +67,14 @@ axiosClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
-    console.log("-==-=-=-=error", error);
+    // console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
+    // console.log("-==-=-=-=error", error);
     // const isRetr = originalRequest.config._isRetry;
     if (error.response.status === 401 && !originalRequest?.config?._isRetry) {
-      console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
+      // console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
 
       originalRequest._isRetry = true;
-      console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
+      // console.log("-=-=-=-=-=-=,originalRequest", originalRequest);
 
       try {
         const response = await refreshToken();
