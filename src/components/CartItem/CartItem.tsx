@@ -23,7 +23,7 @@ export default function CartItem({
   return (
     <div className="flex bg-white p-2 rounded-md items-center gap-0">
       <div className="w-[50px] h-[50px] m-2 mr-4 ml-0">
-        <img src={image} alt={title} />
+        <img src={image} className="w-full h-full" alt={title} />
       </div>
       <div className="flex flex-col w-[180px] h-[60px]">
         <div className="flex items-center justify-between">
