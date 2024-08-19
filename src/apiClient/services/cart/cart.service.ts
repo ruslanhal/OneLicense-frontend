@@ -34,8 +34,10 @@ export const addImageToCart = async (
 
 export const removeImageFromCart = async (cartProjectImageId: string) => {
   try {
+   /// console.log(cartProjectImageId);
     const response = await axiosClient.delete(`/cart/${cartProjectImageId}`);
-    console.log("-=-=-=-=-responsedata addImageToCart", response.data);
+    
+   // console.log("-=-=-=-=-responsedata addImageToCart", response.data);
     return response.data;
   } catch (error: any) {
     console.log("-=-=-=-=errro", error);

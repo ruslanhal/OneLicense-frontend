@@ -1,7 +1,7 @@
 import Project from "@/components/Project/Project";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import IconAddNew from "@/assets/IconAddNew";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   createProject,
   deleteProject,
@@ -10,11 +10,10 @@ import {
   searchProjects,
   searchMyProjects,
 } from "@/apiClient/services/project/project.service";
-import {IProjectEntity} from "@/apiClient/services/project/types/project.entities";
+import { IProjectEntity } from "@/apiClient/services/project/types/project.entities";
 import Skeleton from "@/components/Skeleton/Skeleton";
-import styles from "./HomePage.module.scss";
-import {authHook} from "@/apiClient/hooks/authHooks";
-import {useSearch} from "@/apiClient/contexts/SearchContext";
+import { authHook } from "@/apiClient/hooks/authHooks";
+import { useSearch } from "@/apiClient/contexts/SearchContext";
 
 interface Props {}
 
@@ -23,8 +22,12 @@ const HomePage = (props: Props) => {
   const [projects, setProjects] = useState<IProjectEntity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [skeletons, setSkeletons] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  const {user, isLoading: isUserLoading} = authHook();
-  const {searchText} = useSearch();
+  const { user, isLoading: isUserLoading } = authHook();
+  const { searchText } = useSearch();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const limit = 2;
 
   useEffect(() => {
     const fetchAllProjects = async () => {
@@ -35,10 +38,11 @@ const HomePage = (props: Props) => {
           if (user.role === "creator") {
             projects = await getAllMyProjects();
           } else if (user.role === "supplier") {
-            projects = await getAllProjects();
+            let projInfo = await getAllProjects(page, limit);
+            setTotalPages(projInfo.pages);
+            projects = projInfo.data;
           }
           setProjects(projects);
-          console.log("-=-=-=-=-=-=-=-=--=projects", projects);
         }
       } catch (e) {
         console.log(e);
@@ -50,7 +54,7 @@ const HomePage = (props: Props) => {
     if (!isUserLoading) {
       fetchAllProjects();
     }
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, page]);
 
   const handleCreateProject = async () => {
     try {
@@ -81,7 +85,9 @@ const HomePage = (props: Props) => {
         if (user.role === "creator") {
           projects = await getAllMyProjects();
         } else if (user.role === "supplier") {
-          projects = await getAllProjects();
+          let projInfo = await getAllProjects(page, limit);
+          setTotalPages(projInfo.pages);
+          projects = projInfo.data;
         }
         setProjects(projects);
       } else {
@@ -100,7 +106,7 @@ const HomePage = (props: Props) => {
       fetchFoundProjects();
     }
     console.log(searchText);
-  }, [searchText, isLoading]);
+  }, [searchText, isLoading, page]);
 
   return (
     <>
@@ -134,6 +140,18 @@ const HomePage = (props: Props) => {
           ))}
       </div>
 
+      <div className="w-full flex items-center justify-center mt-20 gap-2 mb-20">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <div
+            style={index + 1 === page ? { border: "1px solid black" } : {}}
+            key={index}
+            onClick={()=>setPage(index+1)}
+            className="cursor-pointer bg-[#E5E5E5] px-4 py-2"
+          >
+            {index + 1}
+          </div>
+        ))}
+      </div>
       {isLoading ? <Skeleton skeletons={skeletons} /> : null}
     </>
   );

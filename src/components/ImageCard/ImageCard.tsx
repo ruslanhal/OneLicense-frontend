@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import styles from "./ImageCard.module.scss";
 import DelIcon from "@/assets/DelIcon";
 import { authHook } from "@/apiClient/hooks/authHooks";
-import { addImageToCart } from "@/apiClient/services/cart/cart.service";
+import {
+  addImageToCart,
+  removeImageFromCart,
+} from "@/apiClient/services/cart/cart.service";
+import { useSearch } from "@/apiClient/contexts/SearchContext";
 
 interface Image {
   id: string;
@@ -25,7 +29,7 @@ type Props = {
   onDragOver: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, item: Image) => void;
   draggedOverItem: string | null;
-  inCart:boolean
+  inCart: boolean;
 };
 
 const ImgCard: React.FC<Props> = ({
@@ -40,11 +44,12 @@ const ImgCard: React.FC<Props> = ({
   onDrop,
   draggedOverItem,
   projectId,
-  inCart
+  inCart,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { user, isLoading: isUserLoading } = authHook();
   const [addedToCart, setAddedToCart] = useState(inCart);
+  const { cartLength, setCartLength } = useSearch();
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setIsDeleting(true);
@@ -60,7 +65,7 @@ const ImgCard: React.FC<Props> = ({
   };
 
   const handleAddImageToCart = async () => {
-    console.log(item.id, projectId, item.price)
+    console.log(item.id, projectId, item.price);
     if (addedToCart) return;
     const response = await addImageToCart({
       imageId: item.id,
@@ -109,7 +114,7 @@ const ImgCard: React.FC<Props> = ({
 
       <div className={styles.buttons}>
         <button className={styles.button} onClick={(e) => e.stopPropagation()}>
-          {item.price}
+          ${item.price}
         </button>
         {user?.role === "supplier" ? (
           <button
@@ -120,8 +125,13 @@ const ImgCard: React.FC<Props> = ({
             }
             onClick={(e) => {
               e.stopPropagation();
-              setAddedToCart(!addedToCart);
-              handleAddImageToCart()
+              if (!addedToCart) {
+                setAddedToCart(!addedToCart);
+                const res=handleAddImageToCart();
+                if(res){
+                  setCartLength(cartLength+1);
+                }
+              }
             }}
           >
             {addedToCart ? "In cart" : "Add to cart"}

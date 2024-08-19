@@ -138,10 +138,16 @@ export const searchProjects=async (searchString:string)=>{
 }
 
 
-export const getAllProjects=async ()=>{
+export const getAllProjects=async (page:number, limit:number)=>{
   try{
-    const response=await axiosClient.get('/project');
-    return response.data;
+    const response=await axiosClient.get(`/project/${page}/${limit}`);
+   // console.log(response.data.totalPages)
+    const res={
+      data:response.data.projectData,
+      pages: response.data.totalPages
+    }
+    //console.log(res)
+    return res;
   }
   catch(error:any){
     console.log("-=-=-=-=errro", error);

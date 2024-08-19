@@ -51,7 +51,7 @@ export const getAllTags = async (): Promise<ITag[]> => {
 export const getTAGSofProject = async (projectId: string): Promise<ITag[]> => {
   try {
     const response = await axiosClient.get(`/tag/tags/${projectId}`);
-    console.log("-=-=-=-=-=-getTAGSofProject response data", response.data);
+    //console.log("-=-=-=-=-=-getTAGSofProject response data", response.data);
     return response.data;
   } catch (error) {
     console.log("-=-=-=-=errro", error);

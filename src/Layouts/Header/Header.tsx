@@ -3,26 +3,20 @@ import Logo from "../../assets/logo.svg";
 import Notification from "@/assets/Notification/Notification";
 import Basket from "@/assets/Basket";
 import { authHook } from "@/apiClient/hooks/authHooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserDropdown from "@/components/UserDropdown/UserDropdown";
-import { useQueryClient } from "@tanstack/react-query";
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
 import BasketSidebar from "../BasketSidebar/BasketSidebar";
 import { useSearch } from "@/apiClient/contexts/SearchContext";
-
+import { getCart } from "@/apiClient/services/cart/cart.service";
 
 const Header = () => {
-  // const {user} = authHook();
-  // const data = queryClient.getQueryData(["profile"]);
-  // console.log("-=-=-=-=-=data in header", data);
-  const queryClient = useQueryClient();
-  // console.log("-=-=-=-=-=user in header", user);
   const [isSideBarOpened, setIsSideBarOpened] = useState(false);
-  const { searchText, setSearchText } = useSearch();
+  const { setSearchText, cartLength, setCartLength } = useSearch();
   const { user, isLoading: isUserLoading } = authHook();
 
-  const [search, setSearch]=useState("")
+  const [search, setSearch] = useState("");
 
   const handleOpenSideBar = (value: boolean) => {
     setIsSideBarOpened(value);
@@ -35,6 +29,23 @@ const Header = () => {
       setSearchText('');
     }
   };
+
+  const fetchItemsFromCart = async () => {
+    try {
+      const response = await getCart();
+      const totalItems = response.cartProject.reduce((acc, project) => {
+        return acc + project.cartProjectImage.length;
+      }, 0);
+
+      setCartLength(totalItems);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchItemsFromCart();
+  }, []);
 
   return (
     <header>
@@ -52,7 +63,7 @@ const Header = () => {
             <Button styleType="button_header" text="Licenses" />
           </Link>
 
-          <form onSubmit={(e)=>{e.preventDefault();setSearchText(search);}}>
+          <form onSubmit={(e) => { e.preventDefault(); setSearchText(search); }}>
             <input
               value={search}
               onChange={handleInputChange}
@@ -61,21 +72,13 @@ const Header = () => {
             ></input>
           </form>
 
-          {user?.role==='supplier' ? (
+          {user?.role === 'supplier' ? (
             <div onClick={() => setIsSideBarOpened(true)}>
-              <Basket />
+              <Basket cartLength={cartLength} />
             </div>
           ) : (
             <Link to='/purchase'><Notification /></Link>
           )}
-
-          {/* <div>
-            <span className="underline cursor-pointer">
-              {user?.role === "creator"
-                ? user?.creatorData?.firstName
-                : user?.supplierData?.businessName}{" "}
-            </span>
-          </div> */}
           <UserDropdown user={user} />
         </div>
       </div>

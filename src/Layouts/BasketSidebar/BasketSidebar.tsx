@@ -1,4 +1,8 @@
-import { getCart, removeImageFromCart } from "@/apiClient/services/cart/cart.service";
+import { useSearch } from "@/apiClient/contexts/SearchContext";
+import {
+  getCart,
+  removeImageFromCart,
+} from "@/apiClient/services/cart/cart.service";
 import Button from "@/components/Button/Button";
 import CartItem from "@/components/CartItem/CartItem";
 import React, { useEffect, useState } from "react";
@@ -10,10 +14,17 @@ interface BasketSideBarProps {
 
 export default function BasketSidebar({ close }: BasketSideBarProps) {
   const [cartList, setCartList] = useState([]);
+  const { setCartLength, cartLength } = useSearch();
 
   const handleDelete = async (id: string) => {
-    setCartList((prevCartList) => prevCartList.filter((item) => item.id !== id));
-    const response=await removeImageFromCart(id);
+    setCartList((prevCartList) =>
+      prevCartList.filter((item) => item.id !== id)
+    );
+    const response = await removeImageFromCart(id);
+    console.log(response);
+
+    setCartLength(cartLength - 1);
+
     console.log(response);
   };
 
@@ -29,18 +40,22 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
     const handleGetImagesFromCart = async () => {
       try {
         const response = await getCart();
-        console.log('API response:', response);
+        console.log("API response:", response);
 
         if (response && response.cartProject) {
           const cartProjectImages = response.cartProject.flatMap((project) => {
             const projectTitle = project.project?.title;
 
-            return (project.cartProjectImage || []).map((image) => ({
-              id: image.id,
-              ...image.image,
+            return (project.cartProjectImage || []).map((cartProjectImage) => ({
+              id: cartProjectImage.id,
+              price: cartProjectImage.image.price,
+              image: cartProjectImage.image.thumbnailUrl,
+              currency: cartProjectImage.image.currency,
+              title: cartProjectImage.image.title,
               projectTitle,
             }));
           });
+
           setCartList(cartProjectImages);
         } else {
           setCartList([]);
@@ -53,7 +68,9 @@ export default function BasketSidebar({ close }: BasketSideBarProps) {
     handleGetImagesFromCart();
   }, []);
 
-  const subtotal = cartList.reduce((sum, item) => sum + parseFloat(item.price || "0"), 0).toFixed(2);
+  const subtotal = cartList
+    .reduce((sum, item) => sum + parseFloat(item.price || "0"), 0)
+    .toFixed(2);
 
   return (
     <div

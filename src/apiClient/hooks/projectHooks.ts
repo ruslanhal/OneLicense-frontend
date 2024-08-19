@@ -1,6 +1,4 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {axiosClient} from "../apiClient";
-import {IUser} from "@/common/types/user.types";
 import {AxiosError} from "axios";
 import {createProject, getProject} from "../services/project/project.service";
 import {
